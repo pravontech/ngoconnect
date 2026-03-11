@@ -766,7 +766,7 @@ function App() {
     <>
       <FontLink />
       <div style={{ background:T.bg, minHeight:"100vh", overflowX:"hidden" }}>
-        <Nav onList={()=>showToast("NGO listing form coming soon!")} />
+        <Nav onList={()=>window.location.href='list-ngo.html'} />
         <Hero onExplore={handleExplore} />
         <Ticker />
         <div ref={ngoRef}>

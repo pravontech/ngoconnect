@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SevaSangam Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:#0D1F14;color:#FDFAF4;min-height:100vh;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:#0D1F14;}::-webkit-scrollbar-thumb{background:#3A7D50;border-radius:2px;}
+input,select,textarea{font-family:'Outfit',sans-serif;}
+button{cursor:pointer;font-family:'Outfit',sans-serif;}
+a{text-decoration:none;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.fade-up{animation:fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ── DATA STORE ──
+const STORE = {
+  admin: { user: "admin", pass: "sevasangam2025" },
+  ngos: [
+    { id:1, name:"Asha Ki Kiran Trust", type:"NGO", city:"Pune", state:"Maharashtra", desc:"Empowering underprivileged women and children through education, skill training, and healthcare access since 2009.", address:"14, Deccan Gymkhana, Pune – 411004", lat:18.5204, lng:73.8567, phone:"+91 98765 43210", email:"info@ashakiran.org", website:"www.ashakiran.org", since:"2009", accent:"#5BAF73", beneficiaries:"12,400+", status:"approved", bank:{accName:"Asha Ki Kiran Trust",accNum:"30987654321",ifsc:"SBIN0012345",bankName:"State Bank of India",branch:"Deccan Gymkhana, Pune",accType:"Savings",short:"SBI"}, upi:{id:"ashakiran@sbi",name:"Asha Ki Kiran Trust"}, portal:"https://ashakiran.org/donate", tags:["Women Empowerment","Education","Healthcare"] },
+    { id:2, name:"Shri Balak Ashram", type:"Orphanage", city:"Nashik", state:"Maharashtra", desc:"Providing shelter, education, and nutrition to 200+ orphaned children.", address:"Survey No. 45, Panchavati Colony, Nashik – 422003", lat:20.0059, lng:73.7898, phone:"+91 97654 32109", email:"shribalak@gmail.com", website:"www.shribalakashram.org", since:"1998", accent:"#D4A043", beneficiaries:"200+", status:"approved", bank:{accName:"Shri Balak Ashram",accNum:"12345678901234",ifsc:"PUNB0123456",bankName:"Punjab National Bank",branch:"Panchavati, Nashik",accType:"Current",short:"PNB"}, upi:{id:"balakashram@pnb",name:"Shri Balak Ashram"}, portal:"https://shribalakashram.org/donate", tags:["Children","Shelter","Nutrition"] },
+    { id:3, name:"Green Future Foundation", type:"Trust", city:"Mumbai", state:"Maharashtra", desc:"Environmental NGO championing urban tree plantation and clean water access.", address:"Office 301, Andheri East, Mumbai – 400069", lat:19.1136, lng:72.8697, phone:"+91 91234 56789", email:"hello@greenfuture.in", website:"www.greenfuture.in", since:"2015", accent:"#7BC67A", beneficiaries:"85,000+", status:"pending", bank:{accName:"Green Future Foundation",accNum:"909876543210",ifsc:"HDFC0001234",bankName:"HDFC Bank",branch:"Andheri East, Mumbai",accType:"Current",short:"HDFC"}, upi:{id:"greenfuture@hdfc",name:"Green Future Foundation"}, portal:"https://greenfuture.in/support", tags:["Environment","Clean Water","Climate"] },
+    { id:4, name:"Disha Swayam Siddha", type:"NGO", city:"Nagpur", state:"Maharashtra", desc:"Rural women empowerment through microfinance and legal aid in Vidarbha.", address:"Plot 22, Dharampeth, Nagpur – 440010", lat:21.1458, lng:79.0882, phone:"+91 88765 12345", email:"disha@swayam.net", website:"www.dishaswayam.net", since:"2011", accent:"#4ABFBF", beneficiaries:"6,200+", status:"approved", bank:{accName:"Disha Swayam Siddha",accNum:"5678901234567",ifsc:"ICIC0001122",bankName:"ICICI Bank",branch:"Dharampeth, Nagpur",accType:"Savings",short:"ICICI"}, upi:{id:"dishaswayam@icici",name:"Disha Swayam Siddha"}, portal:"https://dishaswayam.net/donate", tags:["Microfinance","Rural Women","Legal Aid"] },
+    { id:5, name:"Jeevan Jyoti Society", type:"Orphanage", city:"Delhi", state:"Delhi", desc:"Care home for 150 abandoned children offering schooling and medical care.", address:"B-14, Mehrauli, New Delhi – 110030", lat:28.5244, lng:77.1855, phone:"+91 99988 77665", email:"jeevan@jyotisociety.org", website:"www.jyotisociety.org", since:"2002", accent:"#A86FD4", beneficiaries:"1,500+", status:"pending", bank:{accName:"Jeevan Jyoti Society",accNum:"11122233344455",ifsc:"AXIS0001234",bankName:"Axis Bank",branch:"Mehrauli, Delhi",accType:"Savings",short:"AXIS"}, upi:{id:"jeevanjyoti@axl",name:"Jeevan Jyoti Society"}, portal:"https://jyotisociety.org/give", tags:["Children","Schooling","Medical Care"] },
+    { id:6, name:"Krishi Seva Samiti", type:"Trust", city:"Aurangabad", state:"Maharashtra", desc:"Supporting farmers through crop insurance, seed banks and water harvesting.", address:"Cidco Colony, N-6, Aurangabad – 431003", lat:19.8762, lng:75.3433, phone:"+91 94500 11223", email:"info@krishiseva.org", website:"www.krishiseva.org", since:"2007", accent:"#A8C44A", beneficiaries:"32,000+", status:"approved", bank:{accName:"Krishi Seva Samiti",accNum:"0987654321098",ifsc:"MAHB0001234",bankName:"Bank of Maharashtra",branch:"CIDCO, Aurangabad",accType:"Current",short:"BOM"}, upi:{id:"krishiseva@bom",name:"Krishi Seva Samiti"}, portal:"https://krishiseva.org/donate", tags:["Farmers","Water Harvesting","Helpline"] }
+  ],
+  events: [
+    { id:1, ngoId:1, title:"Winter Clothing Drive", desc:"Distribute warm clothing to 500+ families.", date:"2025-12-20", location:"Deccan Gymkhana, Pune", status:"active" },
+    { id:2, ngoId:2, title:"Free Medical Camp", desc:"Health check-up for children and senior citizens.", date:"2026-01-05", location:"Panchavati, Nashik", status:"active" },
+    { id:3, ngoId:3, title:"Tree Plantation Drive", desc:"Plant 1,000 native trees in Aarey Colony.", date:"2026-01-14", location:"Aarey Colony, Mumbai", status:"active" },
+    { id:4, ngoId:4, title:"Women Skill Fair", desc:"Showcase of handicrafts and NRLM products.", date:"2026-01-22", location:"Dharampeth, Nagpur", status:"active" },
+    { id:5, ngoId:5, title:"Annual Sports Meet", desc:"Inter-orphanage sports tournament.", date:"2026-02-01", location:"Mehrauli, Delhi", status:"active" },
+    { id:6, ngoId:6, title:"Farmer Awareness Camp", desc:"Soil testing and crop insurance guidance.", date:"2026-02-10", location:"CIDCO, Aurangabad", status:"active" }
+  ],
+  nextId: 7,
+  nextEventId: 7
+};
+
+// ── STATE ──
+let loggedIn = false;
+let currentPage = "login";
+let editingNgo = null;
+let editingEvent = null;
+let activeTab = "ngos";
+let toast = null;
+let toastTimer = null;
+let filterStatus = "all";
+let searchQ = "";
+
+// ── HELPERS ──
+function $(id){ return document.getElementById(id); }
+function showToast(msg, type="success"){
+  clearTimeout(toastTimer);
+  const el = $("toast");
+  el.textContent = (type==="success"?"✓ ":"⚠ ") + msg;
+  el.style.background = type==="success"?"#5BAF73":"#C4613A";
+  el.style.transform = "translateY(0)"; el.style.opacity = "1";
+  toastTimer = setTimeout(()=>{ el.style.transform="translateY(24px)"; el.style.opacity="0"; }, 2800);
+}
+function getNgoName(id){ const n=STORE.ngos.find(x=>x.id===id); return n?n.name:"Unknown"; }
+function escH(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+// ── RENDER ──
+function render(){
+  const app = document.getElementById("app");
+  if(currentPage==="login") { app.innerHTML = renderLogin(); bindLogin(); return; }
+  app.innerHTML = renderShell();
+  bindShell();
+  renderContent();
+}
+
+// ── LOGIN ──
+function renderLogin(){
+  return `
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0D1F14;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(91,175,115,0.12) 0%,transparent 65%);"></div>
+    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.04"><defs><pattern id="g" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0L0 0 0 60" fill="none" stroke="#5BAF73" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>
+    <div class="fade-up" style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 40px 100px rgba(0,0,0,0.5);">
+      <div style="text-align:center;margin-bottom:2rem;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:#FDFAF4;">Seva<span style="color:#D4A043;">Sangam</span></div>
+        <div style="font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(253,250,244,0.4);margin-top:0.4rem;">Admin Dashboard</div>
+      </div>
+      <div id="loginErr" style="display:none;background:rgba(196,97,58,0.15);border:1px solid rgba(196,97,58,0.4);border-radius:6px;padding:0.7rem 1rem;font-size:0.83rem;color:#E07050;margin-bottom:1rem;"></div>
+      <div style="margin-bottom:1rem;">
+        <label style="font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.45);font-weight:600;display:block;margin-bottom:0.4rem;">Username</label>
+        <input id="loginUser" type="text" placeholder="admin" value="admin"
+          style="width:100%;padding:0.75rem 1rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.9rem;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"/>
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <label style="font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.45);font-weight:600;display:block;margin-bottom:0.4rem;">Password</label>
+        <input id="loginPass" type="password" placeholder="••••••••"
+          style="width:100%;padding:0.75rem 1rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.9rem;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"
+          onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button onclick="doLogin()" style="width:100%;padding:0.85rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.95rem;font-weight:600;box-shadow:0 4px 20px rgba(91,175,115,0.35);transition:all 0.2s;"
+        onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+        Sign In →
+      </button>
+      <div style="text-align:center;margin-top:1.5rem;font-size:0.76rem;color:rgba(253,250,244,0.3);">Default: admin / sevasangam2025</div>
+      <div style="text-align:center;margin-top:0.8rem;">
+        <a href="index.html" style="font-size:0.78rem;color:#5BAF73;">← Back to SevaSangam</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindLogin(){
+  // auto focus
+  setTimeout(()=>{ const p=$("loginPass"); if(p)p.focus(); },100);
+}
+
+function doLogin(){
+  const u=$("loginUser").value.trim();
+  const p=$("loginPass").value.trim();
+  if(u===STORE.admin.user && p===STORE.admin.pass){
+    loggedIn=true; currentPage="dashboard"; render();
+  } else {
+    const err=$("loginErr");
+    err.textContent="Invalid username or password. Please try again.";
+    err.style.display="block";
+  }
+}
+
+// ── SHELL ──
+function renderShell(){
+  const approved = STORE.ngos.filter(n=>n.status==="approved").length;
+  const pending  = STORE.ngos.filter(n=>n.status==="pending").length;
+  return `
+  <div style="display:flex;min-height:100vh;">
+    <!-- Sidebar -->
+    <aside style="width:240px;background:#080F0A;border-right:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;z-index:100;">
+      <div style="padding:1.5rem 1.4rem;border-bottom:1px solid rgba(255,255,255,0.07);">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#FDFAF4;">Seva<span style="color:#D4A043;">Sangam</span></div>
+        <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(253,250,244,0.35);margin-top:0.2rem;">Admin Panel</div>
+      </div>
+      <nav style="padding:1rem 0.8rem;flex:1;">
+        ${["ngos","events","pending","settings"].map(tab=>{
+          const icons={"ngos":"🏛","events":"📅","pending":"⏳","settings":"⚙️"};
+          const labels={"ngos":"Organizations","events":"Events","pending":`Approvals <span style='background:#C4613A;color:#fff;font-size:0.6rem;padding:0.1rem 0.4rem;border-radius:10px;margin-left:0.3rem;'>${pending}</span>`,"settings":"Settings"};
+          const active=activeTab===tab;
+          return `<button onclick="setTab('${tab}')" style="width:100%;text-align:left;padding:0.7rem 0.8rem;border-radius:6px;border:none;background:${active?"rgba(91,175,115,0.15)":"transparent"};color:${active?"#A8DFBA":"rgba(253,250,244,0.5)"};font-size:0.85rem;font-weight:${active?"600":"400"};display:flex;align-items:center;gap:0.6rem;margin-bottom:0.2rem;transition:all 0.2s;border-left:2px solid ${active?"#5BAF73":"transparent"};"
+            onmouseover="if('${tab}'!=='${activeTab}')this.style.background='rgba(255,255,255,0.04)'"
+            onmouseout="if('${tab}'!=='${activeTab}')this.style.background='transparent'">
+            ${icons[tab]} ${labels[tab]}
+          </button>`;
+        }).join("")}
+      </nav>
+      <div style="padding:1rem 1.4rem;border-top:1px solid rgba(255,255,255,0.07);">
+        <div style="font-size:0.76rem;color:rgba(253,250,244,0.35);margin-bottom:0.6rem;">Signed in as <strong style="color:rgba(253,250,244,0.6);">${STORE.admin.user}</strong></div>
+        <button onclick="doLogout()" style="width:100%;padding:0.5rem;background:rgba(196,97,58,0.15);border:1px solid rgba(196,97,58,0.3);border-radius:5px;color:#E07050;font-size:0.8rem;transition:all 0.2s;"
+          onmouseover="this.style.background='rgba(196,97,58,0.25)'" onmouseout="this.style.background='rgba(196,97,58,0.15)'">Sign Out</button>
+        <a href="index.html" style="display:block;text-align:center;margin-top:0.5rem;font-size:0.75rem;color:#5BAF73;">← Public Site</a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main style="margin-left:240px;flex:1;padding:2rem;min-height:100vh;">
+      <!-- Top bar -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;">
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:#FDFAF4;" id="pageTitle">Dashboard</div>
+          <div style="font-size:0.78rem;color:rgba(253,250,244,0.4);margin-top:0.2rem;" id="pageSubtitle">Manage your platform content</div>
+        </div>
+        <div style="display:flex;gap:0.8rem;" id="topActions"></div>
+      </div>
+
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;">
+        ${[
+          ["Total NGOs",STORE.ngos.length,"🏛","#5BAF73"],
+          ["Approved",approved,"✅","#A8C44A"],
+          ["Pending",pending,"⏳","#F0B84A"],
+          ["Events",STORE.events.length,"📅","#4ABFBF"]
+        ].map(([l,v,icon,c])=>`
+        <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1.2rem;border-top:2px solid ${c}30;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;margin-bottom:0.4rem;">${l}</div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:#FDFAF4;">${v}</div>
+            </div>
+            <div style="font-size:1.8rem;opacity:0.7;">${icon}</div>
+          </div>
+        </div>`).join("")}
+      </div>
+
+      <!-- Content area -->
+      <div id="contentArea" class="fade-up"></div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" style="position:fixed;bottom:2rem;right:2rem;z-index:9999;background:#5BAF73;color:#fff;padding:0.8rem 1.6rem;border-radius:8px;font-size:0.88rem;font-weight:600;box-shadow:0 12px 40px rgba(0,0,0,0.4);transform:translateY(24px);opacity:0;transition:all 0.3s;pointer-events:none;"></div>
+
+  <!-- Modal backdrop -->
+  <div id="modalBackdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:1rem;">
+    <div id="modalBox" style="background:#111F17;border:1px solid rgba(255,255,255,0.1);border-radius:16px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,0.6);"></div>
+  </div>`;
+}
+
+function bindShell(){
+  $("modalBackdrop").addEventListener("click", function(e){ if(e.target===this) closeModal(); });
+}
+
+function setTab(tab){ activeTab=tab; filterStatus="all"; searchQ=""; renderContent(); }
+function doLogout(){ loggedIn=false; currentPage="login"; render(); }
+
+function renderContent(){
+  const titles={"ngos":"Organizations","events":"Events","pending":"Pending Approvals","settings":"Settings"};
+  const subs={"ngos":"Add, edit or remove NGO listings","events":"Manage upcoming events & drives","pending":"Review and approve new NGO submissions","settings":"Platform configuration"};
+  if($("pageTitle")) $("pageTitle").textContent = titles[activeTab]||"";
+  if($("pageSubtitle")) $("pageSubtitle").textContent = subs[activeTab]||"";
+
+  if(activeTab==="ngos") renderNGOTab();
+  else if(activeTab==="events") renderEventsTab();
+  else if(activeTab==="pending") renderPendingTab();
+  else if(activeTab==="settings") renderSettingsTab();
+}
+
+// ── NGO TAB ──
+function renderNGOTab(){
+  const ca=$("contentArea"); const ta=$("topActions");
+  ta.innerHTML=`
+    <input id="ngoSearch" placeholder="Search NGOs…" value="${escH(searchQ)}"
+      style="padding:0.5rem 1rem;background:#162A1D;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#FDFAF4;font-size:0.85rem;width:200px;"
+      oninput="searchQ=this.value;renderNGOTab()"/>
+    <select id="ngoFilter" onchange="filterStatus=this.value;renderNGOTab()"
+      style="padding:0.5rem 0.8rem;background:#162A1D;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#FDFAF4;font-size:0.85rem;">
+      <option value="all" ${filterStatus==="all"?"selected":""}>All Status</option>
+      <option value="approved" ${filterStatus==="approved"?"selected":""}>Approved</option>
+      <option value="pending" ${filterStatus==="pending"?"selected":""}>Pending</option>
+    </select>
+    <button onclick="openNGOForm(null)" style="padding:0.5rem 1.2rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.85rem;font-weight:600;">+ Add NGO</button>`;
+
+  let list = STORE.ngos;
+  if(filterStatus!=="all") list=list.filter(n=>n.status===filterStatus);
+  if(searchQ) list=list.filter(n=>n.name.toLowerCase().includes(searchQ.toLowerCase())||n.city.toLowerCase().includes(searchQ.toLowerCase()));
+
+  ca.innerHTML=`
+  <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;overflow:hidden;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="background:#0D1F14;border-bottom:1px solid rgba(255,255,255,0.07);">
+          ${["Organization","Type","City","Status","Actions"].map(h=>`<th style="padding:0.9rem 1rem;text-align:left;font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;">${h}</th>`).join("")}
+        </tr>
+      </thead>
+      <tbody>
+        ${list.length===0?`<tr><td colspan="5" style="padding:2rem;text-align:center;color:rgba(253,250,244,0.3);">No organizations found</td></tr>`:
+        list.map(n=>`
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+          <td style="padding:0.9rem 1rem;">
+            <div style="font-weight:600;color:#FDFAF4;font-size:0.9rem;">${escH(n.name)}</div>
+            <div style="font-size:0.75rem;color:rgba(253,250,244,0.4);margin-top:0.1rem;">${escH(n.email)}</div>
+          </td>
+          <td style="padding:0.9rem 1rem;"><span style="background:${n.accent}1E;color:${n.accent};padding:0.2rem 0.6rem;border-radius:3px;font-size:0.72rem;font-weight:600;">${escH(n.type)}</span></td>
+          <td style="padding:0.9rem 1rem;font-size:0.85rem;color:rgba(253,250,244,0.6);">${escH(n.city)}</td>
+          <td style="padding:0.9rem 1rem;">
+            <span style="background:${n.status==="approved"?"rgba(168,196,74,0.15)":"rgba(240,184,74,0.15)"};color:${n.status==="approved"?"#A8C44A":"#F0B84A"};padding:0.2rem 0.7rem;border-radius:10px;font-size:0.72rem;font-weight:600;">
+              ${n.status==="approved"?"✓ Approved":"⏳ Pending"}
+            </span>
+          </td>
+          <td style="padding:0.9rem 1rem;">
+            <div style="display:flex;gap:0.4rem;">
+              <button onclick="openNGOForm(${n.id})" style="padding:0.3rem 0.7rem;background:rgba(91,175,115,0.15);border:1px solid rgba(91,175,115,0.3);border-radius:4px;color:#5BAF73;font-size:0.75rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(91,175,115,0.3)'" onmouseout="this.style.background='rgba(91,175,115,0.15)'">Edit</button>
+              ${n.status==="pending"?`<button onclick="approveNGO(${n.id})" style="padding:0.3rem 0.7rem;background:rgba(168,196,74,0.15);border:1px solid rgba(168,196,74,0.3);border-radius:4px;color:#A8C44A;font-size:0.75rem;transition:all 0.2s;">Approve</button>`:""}
+              <button onclick="deleteNGO(${n.id})" style="padding:0.3rem 0.7rem;background:rgba(196,97,58,0.12);border:1px solid rgba(196,97,58,0.25);border-radius:4px;color:#C4613A;font-size:0.75rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,97,58,0.25)'" onmouseout="this.style.background='rgba(196,97,58,0.12)'">Delete</button>
+            </div>
+          </td>
+        </tr>`).join("")}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// ── EVENTS TAB ──
+function renderEventsTab(){
+  const ta=$("topActions");
+  ta.innerHTML=`<button onclick="openEventForm(null)" style="padding:0.5rem 1.2rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.85rem;font-weight:600;">+ Add Event</button>`;
+  $("contentArea").innerHTML=`
+  <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;overflow:hidden;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead><tr style="background:#0D1F14;border-bottom:1px solid rgba(255,255,255,0.07);">
+        ${["Event","Organization","Date","Location","Actions"].map(h=>`<th style="padding:0.9rem 1rem;text-align:left;font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;">${h}</th>`).join("")}
+      </tr></thead>
+      <tbody>
+        ${STORE.events.map(ev=>`
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+          <td style="padding:0.9rem 1rem;"><div style="font-weight:600;color:#FDFAF4;font-size:0.9rem;">${escH(ev.title)}</div><div style="font-size:0.75rem;color:rgba(253,250,244,0.4);margin-top:0.1rem;">${escH(ev.desc.substring(0,50))}…</div></td>
+          <td style="padding:0.9rem 1rem;font-size:0.82rem;color:#5BAF73;">${escH(getNgoName(ev.ngoId))}</td>
+          <td style="padding:0.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:rgba(253,250,244,0.6);">${ev.date}</td>
+          <td style="padding:0.9rem 1rem;font-size:0.82rem;color:rgba(253,250,244,0.6);">${escH(ev.location)}</td>
+          <td style="padding:0.9rem 1rem;"><div style="display:flex;gap:0.4rem;">
+            <button onclick="openEventForm(${ev.id})" style="padding:0.3rem 0.7rem;background:rgba(91,175,115,0.15);border:1px solid rgba(91,175,115,0.3);border-radius:4px;color:#5BAF73;font-size:0.75rem;">Edit</button>
+            <button onclick="deleteEvent(${ev.id})" style="padding:0.3rem 0.7rem;background:rgba(196,97,58,0.12);border:1px solid rgba(196,97,58,0.25);border-radius:4px;color:#C4613A;font-size:0.75rem;">Delete</button>
+          </div></td>
+        </tr>`).join("")}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// ── PENDING TAB ──
+function renderPendingTab(){
+  $("topActions").innerHTML="";
+  const pending=STORE.ngos.filter(n=>n.status==="pending");
+  $("contentArea").innerHTML = pending.length===0
+    ? `<div style="text-align:center;padding:4rem;color:rgba(253,250,244,0.3);font-size:1.1rem;">🎉 No pending approvals</div>`
+    : `<div style="display:grid;gap:1rem;">
+      ${pending.map(n=>`
+      <div style="background:#111F17;border:1px solid rgba(240,184,74,0.2);border-radius:10px;padding:1.4rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:#FDFAF4;">${escH(n.name)}</div>
+            <span style="background:rgba(74,191,191,0.15);color:#4ABFBF;padding:0.18rem 0.55rem;border-radius:3px;font-size:0.68rem;font-weight:600;">${n.type}</span>
+          </div>
+          <div style="font-size:0.82rem;color:rgba(253,250,244,0.5);margin-bottom:0.4rem;">${escH(n.city)}, ${escH(n.state)} · ${escH(n.email)} · ${escH(n.phone)}</div>
+          <div style="font-size:0.8rem;color:rgba(253,250,244,0.4);">${escH(n.desc.substring(0,120))}…</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;min-width:110px;">
+          <button onclick="approveNGO(${n.id})" style="padding:0.5rem 1rem;background:linear-gradient(135deg,#A8C44A,#7A9A30);color:#fff;border:none;border-radius:5px;font-size:0.82rem;font-weight:600;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">✓ Approve</button>
+          <button onclick="rejectNGO(${n.id})" style="padding:0.5rem 1rem;background:rgba(196,97,58,0.15);border:1px solid rgba(196,97,58,0.3);border-radius:5px;color:#C4613A;font-size:0.82rem;font-weight:600;">✕ Reject</button>
+        </div>
+      </div>`).join("")}
+    </div>`;
+}
+
+// ── SETTINGS TAB ──
+function renderSettingsTab(){
+  $("topActions").innerHTML="";
+  $("contentArea").innerHTML=`
+  <div style="max-width:500px;">
+    <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1.8rem;margin-bottom:1.2rem;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:#FDFAF4;margin-bottom:1.2rem;">Change Admin Password</div>
+      <div style="margin-bottom:0.9rem;">
+        <label style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.4rem;">Current Password</label>
+        <input id="curPass" type="password" style="width:100%;padding:0.7rem 1rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.88rem;" onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"/>
+      </div>
+      <div style="margin-bottom:0.9rem;">
+        <label style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.4rem;">New Password</label>
+        <input id="newPass" type="password" style="width:100%;padding:0.7rem 1rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.88rem;" onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"/>
+      </div>
+      <button onclick="changePass()" style="padding:0.65rem 1.5rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.88rem;font-weight:600;">Update Password</button>
+    </div>
+    <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1.8rem;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:#FDFAF4;margin-bottom:0.8rem;">Platform Info</div>
+      ${[["Total NGOs",STORE.ngos.length],["Approved",STORE.ngos.filter(x=>x.status==="approved").length],["Pending",STORE.ngos.filter(x=>x.status==="pending").length],["Total Events",STORE.events.length]].map(([k,v])=>`
+      <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px dashed rgba(255,255,255,0.06);">
+        <span style="font-size:0.85rem;color:rgba(253,250,244,0.5);">${k}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#5BAF73;">${v}</span>
+      </div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function changePass(){
+  const cur=$("curPass").value, nw=$("newPass").value;
+  if(cur!==STORE.admin.pass){ showToast("Current password is incorrect","error"); return; }
+  if(nw.length<6){ showToast("New password must be at least 6 characters","error"); return; }
+  STORE.admin.pass=nw; showToast("Password updated successfully");
+}
+
+// ── NGO CRUD ──
+function approveNGO(id){ const n=STORE.ngos.find(x=>x.id===id); if(n){ n.status="approved"; renderContent(); showToast(`${n.name} approved`); render(); } }
+function rejectNGO(id){ if(confirm("Reject and delete this submission?")){ STORE.ngos=STORE.ngos.filter(x=>x.id!==id); renderContent(); showToast("Submission rejected"); render(); } }
+function deleteNGO(id){ const n=STORE.ngos.find(x=>x.id===id); if(n&&confirm(`Delete "${n.name}"? This cannot be undone.`)){ STORE.ngos=STORE.ngos.filter(x=>x.id!==id); STORE.events=STORE.events.filter(e=>e.ngoId!==id); renderContent(); showToast(`${n.name} deleted`); render(); } }
+function deleteEvent(id){ const e=STORE.events.find(x=>x.id===id); if(e&&confirm(`Delete event "${e.title}"?`)){ STORE.events=STORE.events.filter(x=>x.id!==id); renderEventsTab(); showToast("Event deleted"); } }
+
+// ── NGO FORM MODAL ──
+function openNGOForm(id){ adminLogoDataUrl=null; adminPhotos=[]; 
+  const n = id ? STORE.ngos.find(x=>x.id===id) : null;
+  const title = n?"Edit Organization":"Add New Organization";
+  const v = n || { name:"",type:"NGO",city:"",state:"Maharashtra",desc:"",address:"",lat:"",lng:"",phone:"",email:"",website:"",since:"",accent:"#5BAF73",beneficiaries:"",status:"approved",bank:{accName:"",accNum:"",ifsc:"",bankName:"",branch:"",accType:"Savings",short:""},upi:{id:"",name:""},portal:"",tags:[] };
+
+  $("modalBox").innerHTML=`
+  <div style="padding:1.8rem 2rem;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:#FDFAF4;">${title}</div>
+    <button onclick="closeModal()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(253,250,244,0.5);width:32px;height:32px;border-radius:6px;font-size:1rem;">✕</button>
+  </div>
+  <div style="padding:1.8rem 2rem;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+      ${fld("ngoName","Organization Name",v.name)}
+      ${fld("ngoType","Type","",v.type,["NGO","Orphanage","Trust"],true)}
+      ${fld("ngoCity","City",v.city)}
+      ${fld("ngoState","State",v.state)}
+      ${fld("ngoPhone","Phone",v.phone)}
+      ${fld("ngoEmail","Email",v.email)}
+      ${fld("ngoWebsite","Website",v.website)}
+      ${fld("ngoSince","Est. Year",v.since)}
+      ${fld("ngoBeneficiaries","Beneficiaries",v.beneficiaries)}
+      ${fld("ngoStatus","Status","",v.status,["approved","pending"],true)}
+    </div>
+    ${fld("ngoAddress","Full Address",v.address,"","","","full")}
+    ${fld("ngoDesc","Description / Mission",v.desc,"","","","full","textarea")}
+
+
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#FDFAF4;margin:1.2rem 0 0.8rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.07);">📸 Logo &amp; Photos</div>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:start;margin-bottom:1rem;">
+      <div>
+        <label style="font-size:0.67rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.4rem;">Logo</label>
+        <div id="adminLogoDrop" onclick="document.getElementById('adminLogoInput').click()" style="width:80px;height:80px;border-radius:50%;border:2px dashed rgba(91,175,115,0.4);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background:#162A1D;position:relative;transition:all 0.2s;" onmouseover="this.style.borderColor='#5BAF73'" onmouseout="this.style.borderColor='rgba(91,175,115,0.4)'">
+          <input type="file" id="adminLogoInput" accept="image/*" style="display:none" onchange="adminHandleLogo(event)"/>
+          <img id="adminLogoPreview" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
+          <div id="adminLogoPlaceholder" style="text-align:center;pointer-events:none;"><div style="font-size:1.4rem;">🏛</div><div style="font-size:0.55rem;color:rgba(253,250,244,0.4);margin-top:0.2rem;">Logo</div></div>
+        </div>
+        <div id="adminLogoRemove" style="display:none;text-align:center;margin-top:0.3rem;"><button onclick="adminRemoveLogo()" style="font-size:0.65rem;background:none;border:none;color:#C4613A;cursor:pointer;">Remove</button></div>
+      </div>
+      <div>
+        <label style="font-size:0.67rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.4rem;">Photos (up to 5)</label>
+        <div id="adminPhotoZone" onclick="document.getElementById('adminPhotoInput').click()" style="border:2px dashed rgba(255,255,255,0.1);border-radius:8px;padding:1rem;text-align:center;cursor:pointer;background:rgba(255,255,255,0.02);transition:all 0.2s;position:relative;" onmouseover="this.style.borderColor='#5BAF73'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'">
+          <input type="file" id="adminPhotoInput" accept="image/*" multiple style="display:none" onchange="adminHandlePhotos(event)"/>
+          <div style="font-size:1.2rem;margin-bottom:0.2rem;">📸</div>
+          <div style="font-size:0.76rem;color:rgba(253,250,244,0.4);">Click to add photos</div>
+        </div>
+        <div id="adminPhotoGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:0.4rem;margin-top:0.5rem;"></div>
+        <div id="adminPhotoCount" style="font-size:0.65rem;color:rgba(253,250,244,0.3);margin-top:0.3rem;">0 / 5 photos</div>
+      </div>
+    </div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#FDFAF4;margin:1.2rem 0 0.8rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.07);">🏦 Bank Details</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+      ${fld("bankAccName","Account Name",v.bank.accName)}
+      ${fld("bankAccNum","Account Number",v.bank.accNum)}
+      ${fld("bankIFSC","IFSC Code",v.bank.ifsc)}
+      ${fld("bankName","Bank Name",v.bank.bankName)}
+      ${fld("bankBranch","Branch",v.bank.branch)}
+      ${fld("bankAccType","Account Type","",v.bank.accType,["Savings","Current"],true)}
+    </div>
+
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#FDFAF4;margin:0.5rem 0 0.8rem;">📱 UPI Details</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+      ${fld("upiId","UPI ID",v.upi.id)}
+      ${fld("upiName","UPI Name",v.upi.name)}
+    </div>
+
+    <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
+      <button onclick="closeModal()" style="padding:0.65rem 1.5rem;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:rgba(253,250,244,0.6);font-size:0.88rem;">Cancel</button>
+      <button onclick="saveNGO(${id||"null"})" style="padding:0.65rem 1.8rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.88rem;font-weight:600;box-shadow:0 4px 16px rgba(91,175,115,0.3);">${n?"Save Changes":"Add Organization"}</button>
+    </div>
+  </div>`;
+  showModal();
+}
+
+function fld(id,label,val,selVal,options,isSelect,span,type){
+  const lblStyle="font-size:0.67rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.35rem;";
+  const inputStyle="width:100%;padding:0.65rem 0.9rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.86rem;transition:border-color 0.2s;";
+  const wrap = span==="full"?"grid-column:1/-1":"";
+  if(isSelect && options){
+    return `<div style="${wrap}"><label style="${lblStyle}">${label}</label><select id="${id}" style="${inputStyle}cursor:pointer;">${options.map(o=>`<option value="${o}" ${selVal===o?"selected":""} style="background:#0D1F14;">${o}</option>`).join("")}</select></div>`;
+  }
+  if(type==="textarea"){
+    return `<div style="${wrap}"><label style="${lblStyle}">${label}</label><textarea id="${id}" rows="3" style="${inputStyle}resize:vertical;" onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'">${escH(val)}</textarea></div>`;
+  }
+  return `<div style="${wrap}"><label style="${lblStyle}">${label}</label><input id="${id}" value="${escH(val)}" style="${inputStyle}" onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"/></div>`;
+}
+
+function saveNGO(id){
+  const name=$("ngoName").value.trim();
+  if(!name){ showToast("Organization name is required","error"); return; }
+  if(!$("ngoEmail").value.trim()){ showToast("Email is required","error"); return; }
+
+  const data = {
+    name, type:$("ngoType").value, city:$("ngoCity").value.trim(), state:$("ngoState").value.trim(),
+    desc:$("ngoDesc").value.trim(), address:$("ngoAddress").value.trim(),
+    phone:$("ngoPhone").value.trim(), email:$("ngoEmail").value.trim(),
+    website:$("ngoWebsite").value.trim(), since:$("ngoSince").value.trim(),
+    beneficiaries:$("ngoBeneficiaries").value.trim(), status:$("ngoStatus").value,
+    accent:"#5BAF73", lat:0, lng:0, portal:"",
+    tags:[data&&data.tags||[]],
+    bank:{ accName:$("bankAccName").value.trim(), accNum:$("bankAccNum").value.trim(), ifsc:$("bankIFSC").value.trim(), bankName:$("bankName").value.trim(), branch:$("bankBranch").value.trim(), accType:$("bankAccType").value, short:$("bankName").value.trim().substring(0,4).toUpperCase() },
+    upi:{ id:$("upiId").value.trim(), name:$("upiName").value.trim() }
+  };
+  const ACCENTS=["#5BAF73","#D4A043","#7BC67A","#4ABFBF","#A86FD4","#A8C44A","#C4613A"];
+  if(id){
+    const idx=STORE.ngos.findIndex(x=>x.id===id);
+    data.id=id; data.tags=STORE.ngos[idx].tags||[];
+    data.accent=STORE.ngos[idx].accent;
+    STORE.ngos[idx]={...STORE.ngos[idx],...data};
+    showToast(`${name} updated`);
+  } else {
+    data.id=STORE.nextId++; data.tags=[]; data.accent=ACCENTS[data.id%ACCENTS.length];
+    STORE.ngos.push(data); showToast(`${name} added successfully`);
+  }
+  closeModal(); render(); renderNGOTab();
+}
+
+// ── EVENT FORM MODAL ──
+function openEventForm(id){
+  const ev = id ? STORE.events.find(x=>x.id===id) : null;
+  const v = ev || { title:"", desc:"", date:"", location:"", ngoId:STORE.ngos[0]?.id||1, status:"active" };
+  $("modalBox").innerHTML=`
+  <div style="padding:1.8rem 2rem;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:#FDFAF4;">${ev?"Edit Event":"Add New Event"}</div>
+    <button onclick="closeModal()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(253,250,244,0.5);width:32px;height:32px;border-radius:6px;font-size:1rem;">✕</button>
+  </div>
+  <div style="padding:1.8rem 2rem;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+      ${fld("evTitle","Event Title",v.title,"","","","full")}
+      <div><label style="font-size:0.67rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.35rem;">Organization</label>
+        <select id="evNgo" style="width:100%;padding:0.65rem 0.9rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.86rem;cursor:pointer;">
+          ${STORE.ngos.map(n=>`<option value="${n.id}" ${v.ngoId===n.id?"selected":""} style="background:#0D1F14;">${escH(n.name)}</option>`).join("")}
+        </select></div>
+      ${fld("evDate","Event Date",v.date)}
+      ${fld("evLocation","Location",v.location,"","","","full")}
+    </div>
+    ${fld("evDesc","Description",v.desc,"","","","full","textarea")}
+    <div style="display:flex;gap:0.8rem;justify-content:flex-end;margin-top:1.2rem;">
+      <button onclick="closeModal()" style="padding:0.65rem 1.5rem;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:rgba(253,250,244,0.6);font-size:0.88rem;">Cancel</button>
+      <button onclick="saveEvent(${id||"null"})" style="padding:0.65rem 1.8rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.88rem;font-weight:600;">${ev?"Save Changes":"Add Event"}</button>
+    </div>
+  </div>`;
+  showModal();
+}
+
+function saveEvent(id){
+  const title=$("evTitle").value.trim();
+  if(!title){ showToast("Event title is required","error"); return; }
+  const data={ title, desc:$("evDesc").value.trim(), date:$("evDate").value, location:$("evLocation").value.trim(), ngoId:parseInt($("evNgo").value), status:"active" };
+  if(id){ const idx=STORE.events.findIndex(x=>x.id===id); data.id=id; STORE.events[idx]={...STORE.events[idx],...data}; showToast("Event updated"); }
+  else { data.id=STORE.nextEventId++; STORE.events.push(data); showToast("Event added"); }
+  closeModal(); renderEventsTab();
+}
+
+function showModal(){ const b=$("modalBackdrop"); b.style.display="flex"; setTimeout(()=>b.style.animation="fadeIn 0.2s ease",10); }
+function closeModal(){ $("modalBackdrop").style.display="none"; }
+
+
+// ── ADMIN PHOTO/LOGO UPLOAD ──
+let adminLogoDataUrl = null;
+let adminPhotos = [];
+
+function adminHandleLogo(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    adminLogoDataUrl = ev.target.result;
+    document.getElementById('adminLogoPreview').src = adminLogoDataUrl;
+    document.getElementById('adminLogoPreview').style.display = 'block';
+    document.getElementById('adminLogoPlaceholder').style.display = 'none';
+    document.getElementById('adminLogoRemove').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function adminRemoveLogo(){
+  adminLogoDataUrl = null;
+  document.getElementById('adminLogoPreview').style.display = 'none';
+  document.getElementById('adminLogoPlaceholder').style.display = 'block';
+  document.getElementById('adminLogoRemove').style.display = 'none';
+}
+
+function adminHandlePhotos(e){
+  const files = Array.from(e.target.files);
+  const remaining = 5 - adminPhotos.length;
+  files.slice(0, remaining).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      adminPhotos.push({ dataUrl: ev.target.result, name: file.name });
+      adminRenderPhotos();
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('adminPhotoInput').value = '';
+}
+
+function adminRemovePhoto(idx){
+  adminPhotos.splice(idx, 1);
+  adminRenderPhotos();
+}
+
+function adminRenderPhotos(){
+  const grid = document.getElementById('adminPhotoGrid');
+  const cnt = document.getElementById('adminPhotoCount');
+  if(!grid || !cnt) return;
+  cnt.textContent = adminPhotos.length + ' / 5 photos';
+  grid.innerHTML = adminPhotos.map((p,i) => `
+    <div style="position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;background:#111F17;border:1px solid rgba(255,255,255,0.07);">
+      <img src="${p.dataUrl}" style="width:100%;height:100%;object-fit:cover;display:block;" alt="Photo ${i+1}"/>
+      <button onclick="adminRemovePhoto(${i})" style="position:absolute;top:2px;right:2px;background:rgba(196,97,58,0.85);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:0.6rem;cursor:pointer;">✕</button>
+    </div>`).join('');
+}
+
+// Reset photo state when opening modal
+const _origOpenNGO = openNGOForm;
+
+// ── INIT ──
+render();
+</script>
+</body>
+</html>

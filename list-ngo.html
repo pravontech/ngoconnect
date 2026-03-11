@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>List Your NGO — SevaSangam</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:#0D1F14;color:#FDFAF4;min-height:100vh;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:#0D1F14;}::-webkit-scrollbar-thumb{background:#3A7D50;border-radius:2px;}
+input,select,textarea{font-family:'Outfit',sans-serif;outline:none;}
+button{cursor:pointer;font-family:'Outfit',sans-serif;}
+a{text-decoration:none;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.step-panel{display:none;animation:fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both;}
+.step-panel.active{display:block;}
+.fl{font-size:0.68rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.45);font-weight:600;display:block;margin-bottom:0.38rem;}
+.fi{width:100%;padding:0.72rem 1rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:7px;color:#FDFAF4;font-size:0.88rem;transition:border-color 0.2s,box-shadow 0.2s;}
+.fi:focus{border-color:#5BAF73;box-shadow:0 0 0 3px rgba(91,175,115,0.12);}
+.fi.err{border-color:#C4613A !important;}
+.fi-err{font-size:0.72rem;color:#C4613A;margin-top:0.3rem;display:none;}
+select.fi{cursor:pointer;}
+textarea.fi{resize:vertical;min-height:90px;}
+.fg{margin-bottom:1.1rem;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.full{grid-column:1/-1;}
+.upload-zone{border:2px dashed rgba(91,175,115,0.3);border-radius:10px;padding:2rem;text-align:center;background:rgba(91,175,115,0.04);cursor:pointer;transition:all 0.25s;position:relative;}
+.upload-zone:hover,.upload-zone.drag{border-color:#5BAF73;background:rgba(91,175,115,0.08);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.img-preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:0.6rem;margin-top:0.8rem;}
+.img-thumb{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:#111F17;border:1px solid rgba(255,255,255,0.07);}
+.img-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.img-thumb .remove-btn{position:absolute;top:4px;right:4px;background:rgba(196,97,58,0.85);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:0.7rem;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;}
+.img-thumb .badge{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.65);font-size:0.6rem;text-align:center;padding:0.15rem;color:rgba(255,255,255,0.7);}
+.logo-drop{width:120px;height:120px;border-radius:50%;border:2px dashed rgba(91,175,115,0.4);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;background:#162A1D;margin:0 auto;transition:all 0.2s;}
+.logo-drop:hover{border-color:#5BAF73;background:rgba(91,175,115,0.1);}
+.logo-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.logo-drop img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+@media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav style="position:sticky;top:0;z-index:100;background:rgba(13,31,20,0.96);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 5%;height:64px;display:flex;align-items:center;justify-content:space-between;">
+  <a href="index.html" style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#FDFAF4;">Seva<span style="color:#D4A043;">Sangam</span></a>
+  <a href="index.html" style="font-size:0.82rem;color:#5BAF73;font-weight:500;">← Back to Platform</a>
+</nav>
+
+<!-- HERO -->
+<div style="background:linear-gradient(135deg,#111F17 0%,#162A1D 100%);border-bottom:1px solid rgba(255,255,255,0.07);padding:3rem 5%;">
+  <div style="max-width:800px;">
+    <div style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(91,175,115,0.12);border:1px solid rgba(91,175,115,0.25);padding:0.28rem 0.8rem;border-radius:2px;font-size:0.68rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#5BAF73;margin-bottom:1rem;">● Free Listing</div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;line-height:1.1;color:#FDFAF4;margin-bottom:0.9rem;">List Your NGO on<br/><em style="color:#F0B84A;">SevaSangam</em></h1>
+    <p style="color:rgba(253,250,244,0.5);font-size:1rem;line-height:1.7;max-width:560px;">Get discovered by thousands of donors across India. Share your mission, photos, bank details and UPI — zero commission, 100% transparent.</p>
+    <div style="display:flex;gap:2rem;margin-top:1.8rem;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:0.6rem;"><span style="font-size:1.2rem;">🎯</span><div><div style="font-size:0.82rem;font-weight:600;color:#FDFAF4;">Free Forever</div><div style="font-size:0.72rem;color:rgba(253,250,244,0.4);">No charges, ever</div></div></div>
+      <div style="display:flex;align-items:center;gap:0.6rem;"><span style="font-size:1.2rem;">📸</span><div><div style="font-size:0.82rem;font-weight:600;color:#FDFAF4;">Photo Gallery</div><div style="font-size:0.72rem;color:rgba(253,250,244,0.4);">Logo + up to 5 photos</div></div></div>
+      <div style="display:flex;align-items:center;gap:0.6rem;"><span style="font-size:1.2rem;">💳</span><div><div style="font-size:0.82rem;font-weight:600;color:#FDFAF4;">Donation Ready</div><div style="font-size:0.72rem;color:rgba(253,250,244,0.4);">Bank & UPI details</div></div></div>
+      <div style="display:flex;align-items:center;gap:0.6rem;"><span style="font-size:1.2rem;">✅</span><div><div style="font-size:0.82rem;font-weight:600;color:#FDFAF4;">Verified Badge</div><div style="font-size:0.72rem;color:rgba(253,250,244,0.4);">After admin review</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP PROGRESS BAR -->
+<div style="background:#0D1F14;padding:1.5rem 5%;border-bottom:1px solid rgba(255,255,255,0.07);position:sticky;top:64px;z-index:90;">
+  <div style="max-width:800px;margin:0 auto;display:flex;align-items:center;" id="stepBar"></div>
+</div>
+
+<div style="max-width:800px;margin:0 auto;padding:2.5rem 5%;">
+
+  <!-- ── STEP 1: BASIC INFO ── -->
+  <div class="step-panel active" id="step1">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#FDFAF4;margin-bottom:0.3rem;">Organization Information</div>
+    <p style="color:rgba(253,250,244,0.45);font-size:0.88rem;margin-bottom:2rem;">Tell us about your organization and upload your logo & photos.</p>
+
+    <!-- LOGO UPLOAD -->
+    <div class="fg">
+      <label class="fl">Organization Logo</label>
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+        <div class="logo-drop" id="logoDrop">
+          <input type="file" id="logoInput" accept="image/*" onchange="handleLogo(event)"/>
+          <img id="logoPreview" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
+          <div id="logoPlaceholder" style="text-align:center;pointer-events:none;">
+            <div style="font-size:1.8rem;margin-bottom:0.3rem;">🏛</div>
+            <div style="font-size:0.68rem;color:rgba(253,250,244,0.4);line-height:1.4;">Click to<br/>upload logo</div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:0.82rem;color:rgba(253,250,244,0.6);line-height:1.6;">Upload your organization's official logo.</div>
+          <div style="font-size:0.75rem;color:rgba(253,250,244,0.35);margin-top:0.4rem;">Recommended: Square image, min 200×200px<br/>Formats: JPG, PNG, WEBP · Max 2MB</div>
+          <button type="button" id="removeLogoBtn" onclick="removeLogo()" style="display:none;margin-top:0.6rem;padding:0.3rem 0.8rem;background:rgba(196,97,58,0.15);border:1px solid rgba(196,97,58,0.3);border-radius:4px;color:#C4613A;font-size:0.75rem;">Remove Logo</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="fg full">
+        <label class="fl">Organization Name *</label>
+        <input class="fi" id="s1_name" placeholder="e.g. Asha Ki Kiran Trust"/>
+        <div class="fi-err" id="s1_name_err">Organization name is required</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Organization Type *</label>
+        <select class="fi" id="s1_type">
+          <option value="" style="background:#0D1F14;">Select type…</option>
+          <option value="NGO" style="background:#0D1F14;">NGO</option>
+          <option value="Orphanage" style="background:#0D1F14;">Orphanage</option>
+          <option value="Trust" style="background:#0D1F14;">Trust</option>
+          <option value="Society" style="background:#0D1F14;">Registered Society</option>
+          <option value="Foundation" style="background:#0D1F14;">Foundation</option>
+        </select>
+        <div class="fi-err" id="s1_type_err">Please select a type</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Established Year</label>
+        <input class="fi" id="s1_since" placeholder="e.g. 2010" type="number" min="1900" max="2025"/>
+      </div>
+      <div class="fg full">
+        <label class="fl">Mission / Description *</label>
+        <textarea class="fi" id="s1_desc" placeholder="Describe your organization's mission, work, and community impact…" rows="4"></textarea>
+        <div class="fi-err" id="s1_desc_err">Description is required</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Primary Focus Area</label>
+        <select class="fi" id="s1_focus">
+          <option value="" style="background:#0D1F14;">Select focus…</option>
+          <option style="background:#0D1F14;">Children &amp; Youth</option>
+          <option style="background:#0D1F14;">Women Empowerment</option>
+          <option style="background:#0D1F14;">Education</option>
+          <option style="background:#0D1F14;">Healthcare</option>
+          <option style="background:#0D1F14;">Environment</option>
+          <option style="background:#0D1F14;">Farmers &amp; Rural</option>
+          <option style="background:#0D1F14;">Elderly Care</option>
+          <option style="background:#0D1F14;">Disability Support</option>
+          <option style="background:#0D1F14;">Disaster Relief</option>
+          <option style="background:#0D1F14;">Other</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Beneficiaries Served</label>
+        <input class="fi" id="s1_ben" placeholder="e.g. 5,000+ families"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Registration Number</label>
+        <input class="fi" id="s1_regnum" placeholder="e.g. MH/2010/12345"/>
+      </div>
+      <div class="fg">
+        <label class="fl">80G Certified?</label>
+        <select class="fi" id="s1_80g">
+          <option value="No" style="background:#0D1F14;">No</option>
+          <option value="Yes" style="background:#0D1F14;">Yes</option>
+          <option value="Applied" style="background:#0D1F14;">Applied / In Progress</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- PHOTOS UPLOAD -->
+    <div class="fg" style="margin-top:0.5rem;">
+      <label class="fl">Organization Photos (up to 5)</label>
+      <div class="upload-zone" id="photoZone" ondragover="handleDragOver(event,'photoZone')" ondragleave="handleDragLeave('photoZone')" ondrop="handleDrop(event)">
+        <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotos(event)" style="z-index:2;"/>
+        <div id="photoPlaceholder" style="pointer-events:none;">
+          <div style="font-size:2.5rem;margin-bottom:0.6rem;">📸</div>
+          <div style="font-size:0.9rem;font-weight:600;color:#FDFAF4;margin-bottom:0.3rem;">Click or drag photos here</div>
+          <div style="font-size:0.76rem;color:rgba(253,250,244,0.4);">Show your work, events, and facilities · JPG, PNG, WEBP · Max 5MB each · Up to 5 photos</div>
+        </div>
+      </div>
+      <div class="img-preview-grid" id="photoGrid"></div>
+      <div style="font-size:0.72rem;color:rgba(253,250,244,0.35);margin-top:0.5rem;" id="photoCount">0 / 5 photos uploaded</div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;">
+      <button onclick="goStep(2)" style="padding:0.75rem 2.2rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:7px;font-size:0.9rem;font-weight:600;box-shadow:0 6px 20px rgba(91,175,115,0.3);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Next: Contact Details →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: CONTACT ── -->
+  <div class="step-panel" id="step2">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#FDFAF4;margin-bottom:0.3rem;">Contact &amp; Location</div>
+    <p style="color:rgba(253,250,244,0.45);font-size:0.88rem;margin-bottom:2rem;">Help donors find and reach your organization easily.</p>
+    <div class="grid2">
+      <div class="fg">
+        <label class="fl">Contact Phone *</label>
+        <input class="fi" id="s2_phone" placeholder="+91 98765 43210" type="tel"/>
+        <div class="fi-err" id="s2_phone_err">Phone number is required</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Email Address *</label>
+        <input class="fi" id="s2_email" placeholder="info@yourorganization.org" type="email"/>
+        <div class="fi-err" id="s2_email_err">Valid email is required</div>
+      </div>
+      <div class="fg full">
+        <label class="fl">Website (optional)</label>
+        <input class="fi" id="s2_website" placeholder="www.yourorganization.org"/>
+      </div>
+      <div class="fg full">
+        <label class="fl">Full Address *</label>
+        <textarea class="fi" id="s2_address" placeholder="Building, Street, Area, Landmark…" rows="2"></textarea>
+        <div class="fi-err" id="s2_address_err">Address is required</div>
+      </div>
+      <div class="fg">
+        <label class="fl">City *</label>
+        <input class="fi" id="s2_city" placeholder="e.g. Pune"/>
+        <div class="fi-err" id="s2_city_err">City is required</div>
+      </div>
+      <div class="fg">
+        <label class="fl">State *</label>
+        <select class="fi" id="s2_state">
+          <option value="" style="background:#0D1F14;">Select state…</option>
+          <option style="background:#0D1F14;">Maharashtra</option><option style="background:#0D1F14;">Delhi</option>
+          <option style="background:#0D1F14;">Karnataka</option><option style="background:#0D1F14;">Tamil Nadu</option>
+          <option style="background:#0D1F14;">Gujarat</option><option style="background:#0D1F14;">Rajasthan</option>
+          <option style="background:#0D1F14;">Uttar Pradesh</option><option style="background:#0D1F14;">West Bengal</option>
+          <option style="background:#0D1F14;">Madhya Pradesh</option><option style="background:#0D1F14;">Telangana</option>
+          <option style="background:#0D1F14;">Kerala</option><option style="background:#0D1F14;">Bihar</option>
+          <option style="background:#0D1F14;">Punjab</option><option style="background:#0D1F14;">Haryana</option>
+          <option style="background:#0D1F14;">Other</option>
+        </select>
+        <div class="fi-err" id="s2_state_err">State is required</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Latitude <span style="opacity:0.5;">(for Maps)</span></label>
+        <input class="fi" id="s2_lat" placeholder="e.g. 18.5204" type="number" step="any"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Longitude <span style="opacity:0.5;">(for Maps)</span></label>
+        <input class="fi" id="s2_lng" placeholder="e.g. 73.8567" type="number" step="any"/>
+      </div>
+      <div class="fg full">
+        <label class="fl">Primary Contact Person</label>
+        <input class="fi" id="s2_contact" placeholder="Name of person handling this listing"/>
+      </div>
+    </div>
+    <div style="background:rgba(91,175,115,0.06);border:1px solid rgba(91,175,115,0.15);border-radius:8px;padding:0.9rem 1rem;font-size:0.78rem;color:rgba(253,250,244,0.5);line-height:1.6;">
+      💡 Find coordinates at <a href="https://maps.google.com" target="_blank" style="color:#5BAF73;">maps.google.com</a> — right-click your address → "What's here?" to copy lat/lng.
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:1.5rem;">
+      <button onclick="goStep(1)" style="padding:0.75rem 1.8rem;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:7px;color:rgba(253,250,244,0.6);font-size:0.88rem;">← Back</button>
+      <button onclick="goStep(3)" style="padding:0.75rem 2.2rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:7px;font-size:0.9rem;font-weight:600;box-shadow:0 6px 20px rgba(91,175,115,0.3);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Next: Donation Details →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: DONATION DETAILS ── -->
+  <div class="step-panel" id="step3">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#FDFAF4;margin-bottom:0.3rem;">Donation Details</div>
+    <p style="color:rgba(253,250,244,0.45);font-size:0.88rem;margin-bottom:2rem;">Donors will use these to send contributions directly to you. All details shown publicly.</p>
+
+    <div style="font-size:0.82rem;font-weight:700;color:#5BAF73;margin-bottom:0.8rem;display:flex;align-items:center;gap:0.4rem;">🏦 Bank Account Details</div>
+    <div class="grid2" style="margin-bottom:1.8rem;">
+      <div class="fg">
+        <label class="fl">Account Holder Name *</label>
+        <input class="fi" id="s3_accname" placeholder="Full registered name"/>
+        <div class="fi-err" id="s3_accname_err">Account name is required</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Account Number *</label>
+        <input class="fi" id="s3_accnum" placeholder="e.g. 30987654321"/>
+        <div class="fi-err" id="s3_accnum_err">Account number is required</div>
+      </div>
+      <div class="fg">
+        <label class="fl">IFSC Code *</label>
+        <input class="fi" id="s3_ifsc" placeholder="e.g. SBIN0012345" oninput="this.value=this.value.toUpperCase()"/>
+        <div class="fi-err" id="s3_ifsc_err">IFSC code is required</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Bank Name *</label>
+        <input class="fi" id="s3_bankname" placeholder="e.g. State Bank of India"/>
+        <div class="fi-err" id="s3_bankname_err">Bank name is required</div>
+      </div>
+      <div class="fg">
+        <label class="fl">Branch Name</label>
+        <input class="fi" id="s3_branch" placeholder="e.g. Deccan Gymkhana, Pune"/>
+      </div>
+      <div class="fg">
+        <label class="fl">Account Type</label>
+        <select class="fi" id="s3_acctype">
+          <option style="background:#0D1F14;">Savings</option>
+          <option style="background:#0D1F14;">Current</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="font-size:0.82rem;font-weight:700;color:#4ABFBF;margin-bottom:0.8rem;display:flex;align-items:center;gap:0.4rem;">📱 UPI Details</div>
+    <div class="grid2" style="margin-bottom:1.8rem;">
+      <div class="fg">
+        <label class="fl">UPI ID</label>
+        <input class="fi" id="s3_upiid" placeholder="e.g. yourorg@sbi"/>
+      </div>
+      <div class="fg">
+        <label class="fl">UPI Display Name</label>
+        <input class="fi" id="s3_upiname" placeholder="Name shown in UPI apps"/>
+      </div>
+    </div>
+
+    <div style="font-size:0.82rem;font-weight:700;color:#D4A043;margin-bottom:0.8rem;">💻 Online Portal <span style="font-weight:400;color:rgba(253,250,244,0.4);">(optional)</span></div>
+    <div class="fg">
+      <label class="fl">Donation Portal URL</label>
+      <input class="fi" id="s3_portal" placeholder="https://yourorganization.org/donate"/>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:1.5rem;">
+      <button onclick="goStep(2)" style="padding:0.75rem 1.8rem;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:7px;color:rgba(253,250,244,0.6);font-size:0.88rem;">← Back</button>
+      <button onclick="goStep(4)" style="padding:0.75rem 2.2rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:7px;font-size:0.9rem;font-weight:600;box-shadow:0 6px 20px rgba(91,175,115,0.3);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Review &amp; Submit →</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: REVIEW ── -->
+  <div class="step-panel" id="step4">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#FDFAF4;margin-bottom:0.3rem;">Review &amp; Submit</div>
+    <p style="color:rgba(253,250,244,0.45);font-size:0.88rem;margin-bottom:2rem;">Check all details carefully before submitting.</p>
+
+    <!-- Logo + Photos preview in review -->
+    <div id="reviewMediaPreview" style="margin-bottom:1.2rem;"></div>
+    <div id="reviewContent"></div>
+
+    <div style="background:rgba(91,175,115,0.06);border:1px solid rgba(91,175,115,0.18);border-radius:8px;padding:1rem 1.2rem;margin-top:1.2rem;font-size:0.82rem;color:rgba(253,250,244,0.55);line-height:1.6;">
+      ✅ By submitting, you confirm all provided information is accurate and your organization is a legitimate registered entity. Your listing will be reviewed within <strong style="color:#5BAF73;">2–3 business days</strong>.
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:1.5rem;">
+      <button onclick="goStep(3)" style="padding:0.75rem 1.8rem;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:7px;color:rgba(253,250,244,0.6);font-size:0.88rem;">← Edit Details</button>
+      <button onclick="submitForm()" id="submitBtn" style="padding:0.75rem 2.5rem;background:linear-gradient(135deg,#D4A043,#B8842A);color:#fff;border:none;border-radius:7px;font-size:0.95rem;font-weight:700;box-shadow:0 6px 25px rgba(212,160,67,0.35);transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">🚀 Submit for Review</button>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: SUCCESS ── -->
+  <div class="step-panel" id="step5" style="text-align:center;padding:3rem 0;">
+    <div style="font-size:4rem;margin-bottom:1.2rem;animation:fadeUp 0.5s both;">🎉</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:#FDFAF4;margin-bottom:0.8rem;">Submission Received!</div>
+    <div id="successOrgName" style="font-size:1rem;color:#5BAF73;font-weight:600;margin-bottom:0.5rem;"></div>
+    <p style="color:rgba(253,250,244,0.5);font-size:1rem;line-height:1.7;max-width:460px;margin:0 auto 2rem;">Our admin team will review your listing and notify you at your email. You'll be live on SevaSangam very soon!</p>
+    <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1.4rem;max-width:360px;margin:0 auto 2rem;text-align:left;">
+      <div style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);margin-bottom:0.8rem;">What Happens Next</div>
+      <div style="display:flex;flex-direction:column;gap:0.1rem;">
+        <div style="display:flex;gap:0.8rem;padding:0.5rem 0;border-bottom:1px dashed rgba(255,255,255,0.06);"><div style="background:#5BAF73;color:#0D1F14;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:2px;">1</div><div><div style="font-size:0.84rem;font-weight:500;color:#FDFAF4;">Admin reviews your submission</div><div style="font-size:0.72rem;color:rgba(253,250,244,0.4);">within 2-3 business days</div></div></div>
+        <div style="display:flex;gap:0.8rem;padding:0.5rem 0;border-bottom:1px dashed rgba(255,255,255,0.06);"><div style="background:#5BAF73;color:#0D1F14;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:2px;">2</div><div><div style="font-size:0.84rem;font-weight:500;color:#FDFAF4;">You receive confirmation email</div><div style="font-size:0.72rem;color:rgba(253,250,244,0.4);">on approval</div></div></div>
+        <div style="display:flex;gap:0.8rem;padding:0.5rem 0;border-bottom:1px dashed rgba(255,255,255,0.06);"><div style="background:#5BAF73;color:#0D1F14;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:2px;">3</div><div><div style="font-size:0.84rem;font-weight:500;color:#FDFAF4;">Your NGO goes live</div><div style="font-size:0.72rem;color:rgba(253,250,244,0.4);">on SevaSangam platform</div></div></div>
+        <div style="display:flex;gap:0.8rem;padding:0.5rem 0;"><div style="background:#5BAF73;color:#0D1F14;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:2px;">4</div><div><div style="font-size:0.84rem;font-weight:500;color:#FDFAF4;">Donors find &amp; support you</div><div style="font-size:0.72rem;color:rgba(253,250,244,0.4);">immediately after going live</div></div></div>
+      </div>
+    </div>
+    <a href="index.html" style="display:inline-block;padding:0.75rem 2rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border-radius:7px;font-size:0.9rem;font-weight:600;box-shadow:0 6px 20px rgba(91,175,115,0.3);">← Explore SevaSangam</a>
+  </div>
+
+</div>
+
+<script>
+let currentStep = 1;
+const TOTAL_STEPS = 4;
+let uploadedPhotos = []; // {file, dataUrl, name}
+let logoDataUrl = null;
+
+const STEP_LABELS = ["Basic Info","Contact","Donation","Review"];
+
+function renderStepBar(){
+  const bar = document.getElementById("stepBar");
+  bar.innerHTML = STEP_LABELS.map((lbl,i)=>{
+    const n=i+1, done=n<currentStep, active=n===currentStep;
+    const col = done?"#5BAF73":active?"#F0B84A":"rgba(255,255,255,0.18)";
+    return `
+      <div style="display:flex;align-items:center;flex:1;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+          <div style="width:34px;height:34px;border-radius:50%;background:${done?"#5BAF73":active?"rgba(240,184,74,0.12)":"rgba(255,255,255,0.04)"};border:2px solid ${col};display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:${done?"#0D1F14":col};transition:all 0.3s;">
+            ${done?"✓":n}
+          </div>
+          <div style="font-size:0.63rem;font-weight:${active?"600":"400"};color:${active?"#F0B84A":"rgba(253,250,244,0.35)"};white-space:nowrap;">${lbl}</div>
+        </div>
+        ${i<STEP_LABELS.length-1?`<div style="flex:1;height:2px;background:${done?"#5BAF73":"rgba(255,255,255,0.07)"};margin:0 0.4rem;margin-bottom:1.3rem;transition:background 0.3s;"></div>`:""}
+      </div>`;
+  }).join("");
+}
+
+function goStep(n){
+  if(n > currentStep && !validateStep(currentStep)) return;
+  document.getElementById("step"+currentStep).classList.remove("active");
+  currentStep = n;
+  document.getElementById("step"+currentStep).classList.add("active");
+  renderStepBar();
+  if(n===4) buildReview();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function validateStep(step){
+  let ok = true;
+  const req = (id,eid)=>{ const el=document.getElementById(id),er=document.getElementById(eid); if(!el||!el.value.trim()){ if(el)el.classList.add("err"); if(er)er.style.display="block"; ok=false; } else { el.classList.remove("err"); if(er)er.style.display="none"; } };
+  const reqSel = (id,eid)=>{ const el=document.getElementById(id),er=document.getElementById(eid); if(!el||!el.value){ if(el)el.classList.add("err"); if(er)er.style.display="block"; ok=false; } else { el.classList.remove("err"); if(er)er.style.display="none"; } };
+  if(step===1){ req("s1_name","s1_name_err"); reqSel("s1_type","s1_type_err"); req("s1_desc","s1_desc_err"); }
+  if(step===2){ req("s2_phone","s2_phone_err"); const em=document.getElementById("s2_email"); if(!em.value||!em.value.includes("@")){ em.classList.add("err"); document.getElementById("s2_email_err").style.display="block"; ok=false; } else { em.classList.remove("err"); document.getElementById("s2_email_err").style.display="none"; } req("s2_address","s2_address_err"); req("s2_city","s2_city_err"); reqSel("s2_state","s2_state_err"); }
+  if(step===3){ req("s3_accname","s3_accname_err"); req("s3_accnum","s3_accnum_err"); req("s3_ifsc","s3_ifsc_err"); req("s3_bankname","s3_bankname_err"); }
+  if(!ok) window.scrollTo({top:200,behavior:"smooth"});
+  return ok;
+}
+
+// ── LOGO UPLOAD ──
+function handleLogo(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 2*1024*1024){ alert("Logo must be under 2MB"); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    logoDataUrl = ev.target.result;
+    document.getElementById("logoPreview").src = logoDataUrl;
+    document.getElementById("logoPreview").style.display = "block";
+    document.getElementById("logoPlaceholder").style.display = "none";
+    document.getElementById("removeLogoBtn").style.display = "inline-block";
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeLogo(){
+  logoDataUrl = null;
+  document.getElementById("logoPreview").style.display = "none";
+  document.getElementById("logoPreview").src = "";
+  document.getElementById("logoPlaceholder").style.display = "block";
+  document.getElementById("removeLogoBtn").style.display = "none";
+  document.getElementById("logoInput").value = "";
+}
+
+// ── PHOTO UPLOAD ──
+function handlePhotos(e){ processPhotoFiles(Array.from(e.target.files)); }
+function handleDragOver(e,id){ e.preventDefault(); document.getElementById(id).classList.add("drag"); }
+function handleDragLeave(id){ document.getElementById(id).classList.remove("drag"); }
+function handleDrop(e){ e.preventDefault(); document.getElementById("photoZone").classList.remove("drag"); processPhotoFiles(Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith("image/"))); }
+
+function processPhotoFiles(files){
+  const remaining = 5 - uploadedPhotos.length;
+  const toAdd = files.slice(0, remaining);
+  if(files.length > remaining) alert(`Only ${remaining} more photo(s) can be added (max 5 total).`);
+  toAdd.forEach(file=>{
+    if(file.size > 5*1024*1024){ alert(`${file.name} is over 5MB and was skipped.`); return; }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      uploadedPhotos.push({ file, dataUrl: ev.target.result, name: file.name });
+      renderPhotoGrid();
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById("photoInput").value = "";
+}
+
+function removePhoto(idx){
+  uploadedPhotos.splice(idx,1);
+  renderPhotoGrid();
+}
+
+function renderPhotoGrid(){
+  const grid = document.getElementById("photoGrid");
+  const ph = document.getElementById("photoPlaceholder");
+  const cnt = document.getElementById("photoCount");
+  cnt.textContent = `${uploadedPhotos.length} / 5 photos uploaded`;
+  if(uploadedPhotos.length===0){ ph.style.display="block"; grid.innerHTML=""; return; }
+  ph.style.display = uploadedPhotos.length >= 5 ? "none" : "block";
+  grid.innerHTML = uploadedPhotos.map((p,i)=>`
+    <div class="img-thumb">
+      <img src="${p.dataUrl}" alt="Photo ${i+1}"/>
+      <button class="remove-btn" onclick="removePhoto(${i})">✕</button>
+      <div class="badge">${i===0?"Cover":("Photo "+(i+1))}</div>
+    </div>`).join("");
+}
+
+// ── REVIEW BUILD ──
+function g(id){ const e=document.getElementById(id); return e?e.value.trim():""; }
+
+function buildReview(){
+  // Media preview
+  const mediaDiv = document.getElementById("reviewMediaPreview");
+  let mediaHTML = "";
+  if(logoDataUrl || uploadedPhotos.length > 0){
+    mediaHTML += `<div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1.3rem;margin-bottom:1rem;border-top:2px solid rgba(91,175,115,0.2);">
+      <div style="font-size:0.78rem;font-weight:700;color:#5BAF73;margin-bottom:1rem;">📸 Logo &amp; Photos</div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;flex-wrap:wrap;">`;
+    if(logoDataUrl){
+      mediaHTML += `<div style="text-align:center;">
+        <img src="${logoDataUrl}" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:2px solid rgba(91,175,115,0.4);" alt="Logo"/>
+        <div style="font-size:0.65rem;color:rgba(253,250,244,0.4);margin-top:0.3rem;">Logo</div></div>`;
+    }
+    uploadedPhotos.forEach((p,i)=>{
+      mediaHTML += `<div style="text-align:center;">
+        <img src="${p.dataUrl}" style="width:70px;height:70px;border-radius:8px;object-fit:cover;border:1px solid rgba(255,255,255,0.07);" alt="Photo"/>
+        <div style="font-size:0.65rem;color:rgba(253,250,244,0.4);margin-top:0.3rem;">${i===0?"Cover":"Photo "+(i+1)}</div></div>`;
+    });
+    mediaHTML += `</div></div>`;
+  }
+  mediaDiv.innerHTML = mediaHTML;
+
+  // Info sections
+  const sections = [
+    { title:"🏛 Organization", color:"#5BAF73", rows:[["Name",g("s1_name")],["Type",g("s1_type")],["Est. Year",g("s1_since")||"—"],["Focus",g("s1_focus")||"—"],["Beneficiaries",g("s1_ben")||"—"],["Reg. No.",g("s1_regnum")||"—"],["80G",g("s1_80g")],["Description",g("s1_desc")]] },
+    { title:"📍 Contact &amp; Location", color:"#4ABFBF", rows:[["Phone",g("s2_phone")],["Email",g("s2_email")],["Website",g("s2_website")||"—"],["Address",g("s2_address")],["City / State",g("s2_city")+", "+g("s2_state")],["Contact Person",g("s2_contact")||"—"]] },
+    { title:"🏦 Bank Details", color:"#D4A043", rows:[["Account Name",g("s3_accname")],["Account No.",g("s3_accnum")],["IFSC",g("s3_ifsc")],["Bank",g("s3_bankname")],["Branch",g("s3_branch")||"—"],["Type",g("s3_acctype")]] },
+    { title:"📱 UPI &amp; Portal", color:"#A86FD4", rows:[["UPI ID",g("s3_upiid")||"—"],["UPI Name",g("s3_upiname")||"—"],["Portal URL",g("s3_portal")||"—"]] },
+  ];
+  document.getElementById("reviewContent").innerHTML = sections.map(sec=>`
+    <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1.3rem;margin-bottom:1rem;border-top:2px solid ${sec.color}28;">
+      <div style="font-size:0.78rem;font-weight:700;color:${sec.color};margin-bottom:0.8rem;">${sec.title}</div>
+      ${sec.rows.map(([k,v])=>`
+        <div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px dashed rgba(255,255,255,0.05);">
+          <span style="font-size:0.74rem;color:rgba(253,250,244,0.4);font-weight:500;min-width:110px;">${k}</span>
+          <span style="font-size:0.82rem;color:#FDFAF4;text-align:right;word-break:break-word;max-width:55%;">${v||"—"}</span>
+        </div>`).join("")}
+    </div>`).join("");
+}
+
+function submitForm(){
+  const btn = document.getElementById("submitBtn");
+  btn.textContent = "Submitting…"; btn.disabled = true;
+  btn.style.opacity = "0.7";
+  setTimeout(()=>{
+    document.getElementById("step4").classList.remove("active");
+    currentStep = 5;
+    document.getElementById("step5").classList.add("active");
+    document.getElementById("successOrgName").textContent = g("s1_name") + " — " + g("s1_type");
+    document.getElementById("stepBar").innerHTML = `<div style="font-size:0.78rem;color:#5BAF73;font-weight:600;">✓ Submitted successfully</div>`;
+    window.scrollTo({top:0,behavior:"smooth"});
+  }, 1000);
+}
+
+// Live clear errors on input
+["s1_name","s1_type","s1_desc","s2_phone","s2_email","s2_address","s2_city","s2_state","s3_accname","s3_accnum","s3_ifsc","s3_bankname"].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener("input", ()=>{ el.classList.remove("err"); const er=document.getElementById(id+"_err"); if(er)er.style.display="none"; });
+});
+
+renderStepBar();
+</script>
+</body>
+</html>
