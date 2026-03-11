@@ -4,596 +4,693 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>SevaSangam Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Outfit',sans-serif;background:#0D1F14;color:#FDFAF4;min-height:100vh;}
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:#0D1F14;}::-webkit-scrollbar-thumb{background:#3A7D50;border-radius:2px;}
-input,select,textarea{font-family:'Outfit',sans-serif;}
+input,select,textarea{font-family:'Outfit',sans-serif;outline:none;}
 button{cursor:pointer;font-family:'Outfit',sans-serif;}
-a{text-decoration:none;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-.fade-up{animation:fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both;}
+a{text-decoration:none;color:inherit;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.fl{font-size:0.67rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.42);font-weight:600;display:block;margin-bottom:0.38rem;}
+.fi{width:100%;padding:0.72rem 1rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:7px;color:#FDFAF4;font-size:0.88rem;transition:border-color 0.2s;}
+.fi:focus{border-color:#5BAF73;box-shadow:0 0 0 3px rgba(91,175,115,0.1);}
+select.fi{cursor:pointer;}
+textarea.fi{resize:vertical;}
+.fg{margin-bottom:1rem;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;}
+.full{grid-column:1/-1;}
+.page{display:none;}
+.page.active{display:block;}
+#dashPage.active{display:flex;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.sidebar{width:235px;background:#080F0A;border-right:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;z-index:100;overflow-y:auto;}
+.nav-btn{width:100%;text-align:left;padding:0.68rem 0.8rem;border-radius:6px;border:none;background:transparent;color:rgba(253,250,244,0.48);font-size:0.84rem;font-weight:400;display:flex;align-items:center;gap:0.6rem;margin-bottom:0.15rem;border-left:2px solid transparent;transition:all 0.18s;cursor:pointer;}
+.nav-btn:hover{background:rgba(255,255,255,0.04);}
+.nav-btn.active{background:rgba(91,175,115,0.14);color:#A8DFBA;font-weight:600;border-left-color:#5BAF73;}
+.main{margin-left:235px;flex:1;padding:2rem 2.5rem;min-height:100vh;}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.stat-card{background:#111F17;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:1.2rem;}
+.data-table{width:100%;border-collapse:collapse;background:#111F17;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);}
+.data-table th{padding:0.85rem 0.9rem;text-align:left;font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.38);font-weight:600;background:#0D1F14;border-bottom:1px solid rgba(255,255,255,0.07);}
+.data-table td{padding:0.85rem 0.9rem;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.86rem;vertical-align:middle;}
+.data-table tr:hover td{background:rgba(255,255,255,0.025);}
+.data-table tr:last-child td{border-bottom:none;}
+.btn-primary{background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:7px;font-weight:600;padding:0.85rem 1.5rem;font-size:0.95rem;cursor:pointer;transition:transform 0.18s,box-shadow 0.18s;box-shadow:0 4px 20px rgba(91,175,115,0.28);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(91,175,115,0.38);}
+.btn-sm-edit{background:rgba(91,175,115,0.12);border:1px solid rgba(91,175,115,0.25);color:#5BAF73;border-radius:5px;padding:0.3rem 0.7rem;font-size:0.74rem;cursor:pointer;}
+.btn-sm-edit:hover{background:rgba(91,175,115,0.25);}
+.btn-sm-del{background:rgba(196,97,58,0.12);border:1px solid rgba(196,97,58,0.25);color:#C4613A;border-radius:5px;padding:0.3rem 0.7rem;font-size:0.74rem;cursor:pointer;}
+.btn-sm-del:hover{background:rgba(196,97,58,0.25);}
+.btn-sm-apr{background:rgba(168,196,74,0.12);border:1px solid rgba(168,196,74,0.25);color:#A8C44A;border-radius:5px;padding:0.3rem 0.7rem;font-size:0.74rem;cursor:pointer;}
+.pending-card{background:#111F17;border:1px solid rgba(240,184,74,0.18);border-radius:10px;padding:1.4rem;display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+.settings-box{background:#111F17;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:1.7rem;margin-bottom:1.2rem;max-width:480px;}
+#modalBg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:1rem;}
+#modalBg.open{display:flex;}
+#modalBox{background:#111F17;border:1px solid rgba(255,255,255,0.09);border-radius:14px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,0.6);animation:fadeUp 0.3s ease;}
+.upload-zone{border:2px dashed rgba(91,175,115,0.3);border-radius:8px;padding:1.2rem;text-align:center;cursor:pointer;background:rgba(91,175,115,0.03);transition:all 0.2s;}
+.upload-zone:hover{border-color:#5BAF73;background:rgba(91,175,115,0.07);}
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:0.4rem;margin-top:0.5rem;}
+.img-thumb{position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;background:#0D1F14;border:1px solid rgba(255,255,255,0.07);}
+.img-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+#toast{position:fixed;bottom:2rem;right:2rem;z-index:9999;padding:0.8rem 1.6rem;border-radius:8px;font-size:0.88rem;font-weight:600;box-shadow:0 12px 40px rgba(0,0,0,0.4);opacity:0;transform:translateY(24px);transition:all 0.3s;pointer-events:none;color:#fff;}
 </style>
 </head>
 <body>
-<div id="app"></div>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="page active">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0D1F14;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(91,175,115,0.1),transparent 65%);pointer-events:none;"></div>
+    <div style="background:#111F17;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 40px 100px rgba(0,0,0,0.5);position:relative;z-index:1;animation:fadeUp 0.4s ease both;">
+      <div style="text-align:center;margin-bottom:2rem;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;">Seva<span style="color:#D4A043;">Sangam</span></div>
+        <div style="font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:rgba(253,250,244,0.35);margin-top:0.3rem;">Admin Dashboard</div>
+      </div>
+      <div id="loginErr" style="display:none;background:rgba(196,97,58,0.15);border:1px solid rgba(196,97,58,0.4);border-radius:6px;padding:0.7rem 1rem;font-size:0.83rem;color:#E07050;margin-bottom:1rem;"></div>
+      <div class="fg">
+        <label class="fl" for="loginUser">Username</label>
+        <input class="fi" type="text" id="loginUser" placeholder="admin" value="admin" autocomplete="username"/>
+      </div>
+      <div class="fg" style="margin-bottom:1.5rem;">
+        <label class="fl" for="loginPass">Password</label>
+        <input class="fi" type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password"/>
+      </div>
+      <button class="btn-primary" id="loginBtn" style="width:100%;">Sign In</button>
+      <div style="text-align:center;margin-top:1.2rem;font-size:0.74rem;color:rgba(253,250,244,0.28);">Default: admin / sevasangam2025</div>
+      <div style="text-align:center;margin-top:0.6rem;"><a href="index.html" style="font-size:0.78rem;color:#5BAF73;">Back to SevaSangam</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div id="dashPage" class="page">
+  <aside class="sidebar">
+    <div style="padding:1.4rem;border-bottom:1px solid rgba(255,255,255,0.07);">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;">Seva<span style="color:#D4A043;">Sangam</span></div>
+      <div style="font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:rgba(253,250,244,0.3);margin-top:0.2rem;">Admin Panel</div>
+    </div>
+    <nav style="padding:0.8rem;flex:1;">
+      <button class="nav-btn active" id="tab-ngos"     onclick="switchTab('ngos')">&#127963; Organizations</button>
+      <button class="nav-btn"        id="tab-events"   onclick="switchTab('events')">&#128197; Events</button>
+      <button class="nav-btn"        id="tab-pending"  onclick="switchTab('pending')">&#9203; Approvals <span id="pendingBadge" style="background:#C4613A;color:#fff;font-size:0.58rem;padding:0.08rem 0.4rem;border-radius:10px;margin-left:0.3rem;display:none;"></span></button>
+      <button class="nav-btn"        id="tab-settings" onclick="switchTab('settings')">&#9881; Settings</button>
+    </nav>
+    <div style="padding:1rem 1.2rem;border-top:1px solid rgba(255,255,255,0.07);">
+      <div style="font-size:0.72rem;color:rgba(253,250,244,0.3);margin-bottom:0.5rem;">Signed in as <strong id="adminNameEl" style="color:rgba(253,250,244,0.55);"></strong></div>
+      <button onclick="doLogout()" style="width:100%;padding:0.48rem;background:rgba(196,97,58,0.13);border:1px solid rgba(196,97,58,0.28);border-radius:5px;color:#E07050;font-size:0.78rem;cursor:pointer;">Sign Out</button>
+      <a href="index.html" style="display:block;text-align:center;margin-top:0.5rem;font-size:0.73rem;color:#5BAF73;">Back to Site</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <div id="tabTitle" style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;"></div>
+        <div id="tabSub"   style="font-size:0.76rem;color:rgba(253,250,244,0.38);margin-top:0.15rem;"></div>
+      </div>
+      <div id="topActions" style="display:flex;gap:0.7rem;flex-wrap:wrap;align-items:center;"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card" style="border-top:2px solid rgba(91,175,115,0.22);">
+        <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.38);font-weight:600;margin-bottom:0.4rem;">Total NGOs</div>
+        <div id="statTotal" style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;">0</div>
+      </div>
+      <div class="stat-card" style="border-top:2px solid rgba(168,196,74,0.22);">
+        <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.38);font-weight:600;margin-bottom:0.4rem;">Approved</div>
+        <div id="statApproved" style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;">0</div>
+      </div>
+      <div class="stat-card" style="border-top:2px solid rgba(240,184,74,0.22);">
+        <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.38);font-weight:600;margin-bottom:0.4rem;">Pending</div>
+        <div id="statPending" style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;">0</div>
+      </div>
+      <div class="stat-card" style="border-top:2px solid rgba(74,191,191,0.22);">
+        <div style="font-size:0.66rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.38);font-weight:600;margin-bottom:0.4rem;">Events</div>
+        <div id="statEvents" style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;">0</div>
+      </div>
+    </div>
+
+    <!-- NGOs Panel -->
+    <div class="tab-panel active" id="panel-ngos">
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr>
+            <th style="width:46px;"></th>
+            <th>Organization</th><th>Type</th><th>City</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="ngoBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Events Panel -->
+    <div class="tab-panel" id="panel-events">
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr>
+            <th>Event</th><th>Organization</th><th>Date</th><th>Location</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="evBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pending Panel -->
+    <div class="tab-panel" id="panel-pending">
+      <div id="pendingList"></div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="tab-panel" id="panel-settings">
+      <div class="settings-box">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;margin-bottom:1.2rem;">Change Admin Password</div>
+        <div class="fg"><label class="fl">Current Password</label><input class="fi" type="password" id="curPass"/></div>
+        <div class="fg"><label class="fl">New Password</label><input class="fi" type="password" id="newPass"/></div>
+        <div class="fg"><label class="fl">Confirm Password</label><input class="fi" type="password" id="conPass"/></div>
+        <button class="btn-primary" onclick="changePass()" style="padding:0.62rem 1.4rem;font-size:0.86rem;">Update Password</button>
+      </div>
+      <div class="settings-box">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;margin-bottom:0.9rem;">Platform Stats</div>
+        <div id="settingsStats"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div id="modalBox">
+    <div style="padding:1.6rem 1.8rem;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;">
+      <div id="modalTitle" style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;"></div>
+      <button onclick="closeModal()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(253,250,244,0.5);width:32px;height:32px;border-radius:6px;font-size:1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;">&#10005;</button>
+    </div>
+    <div id="modalBody" style="padding:1.6rem 1.8rem;"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
 
 <script>
-// ── DATA STORE ──
-const STORE = {
-  admin: { user: "admin", pass: "sevasangam2025" },
-  ngos: [
-    { id:1, name:"Asha Ki Kiran Trust", type:"NGO", city:"Pune", state:"Maharashtra", desc:"Empowering underprivileged women and children through education, skill training, and healthcare access since 2009.", address:"14, Deccan Gymkhana, Pune – 411004", lat:18.5204, lng:73.8567, phone:"+91 98765 43210", email:"info@ashakiran.org", website:"www.ashakiran.org", since:"2009", accent:"#5BAF73", beneficiaries:"12,400+", status:"approved", bank:{accName:"Asha Ki Kiran Trust",accNum:"30987654321",ifsc:"SBIN0012345",bankName:"State Bank of India",branch:"Deccan Gymkhana, Pune",accType:"Savings",short:"SBI"}, upi:{id:"ashakiran@sbi",name:"Asha Ki Kiran Trust"}, portal:"https://ashakiran.org/donate", tags:["Women Empowerment","Education","Healthcare"] },
-    { id:2, name:"Shri Balak Ashram", type:"Orphanage", city:"Nashik", state:"Maharashtra", desc:"Providing shelter, education, and nutrition to 200+ orphaned children.", address:"Survey No. 45, Panchavati Colony, Nashik – 422003", lat:20.0059, lng:73.7898, phone:"+91 97654 32109", email:"shribalak@gmail.com", website:"www.shribalakashram.org", since:"1998", accent:"#D4A043", beneficiaries:"200+", status:"approved", bank:{accName:"Shri Balak Ashram",accNum:"12345678901234",ifsc:"PUNB0123456",bankName:"Punjab National Bank",branch:"Panchavati, Nashik",accType:"Current",short:"PNB"}, upi:{id:"balakashram@pnb",name:"Shri Balak Ashram"}, portal:"https://shribalakashram.org/donate", tags:["Children","Shelter","Nutrition"] },
-    { id:3, name:"Green Future Foundation", type:"Trust", city:"Mumbai", state:"Maharashtra", desc:"Environmental NGO championing urban tree plantation and clean water access.", address:"Office 301, Andheri East, Mumbai – 400069", lat:19.1136, lng:72.8697, phone:"+91 91234 56789", email:"hello@greenfuture.in", website:"www.greenfuture.in", since:"2015", accent:"#7BC67A", beneficiaries:"85,000+", status:"pending", bank:{accName:"Green Future Foundation",accNum:"909876543210",ifsc:"HDFC0001234",bankName:"HDFC Bank",branch:"Andheri East, Mumbai",accType:"Current",short:"HDFC"}, upi:{id:"greenfuture@hdfc",name:"Green Future Foundation"}, portal:"https://greenfuture.in/support", tags:["Environment","Clean Water","Climate"] },
-    { id:4, name:"Disha Swayam Siddha", type:"NGO", city:"Nagpur", state:"Maharashtra", desc:"Rural women empowerment through microfinance and legal aid in Vidarbha.", address:"Plot 22, Dharampeth, Nagpur – 440010", lat:21.1458, lng:79.0882, phone:"+91 88765 12345", email:"disha@swayam.net", website:"www.dishaswayam.net", since:"2011", accent:"#4ABFBF", beneficiaries:"6,200+", status:"approved", bank:{accName:"Disha Swayam Siddha",accNum:"5678901234567",ifsc:"ICIC0001122",bankName:"ICICI Bank",branch:"Dharampeth, Nagpur",accType:"Savings",short:"ICICI"}, upi:{id:"dishaswayam@icici",name:"Disha Swayam Siddha"}, portal:"https://dishaswayam.net/donate", tags:["Microfinance","Rural Women","Legal Aid"] },
-    { id:5, name:"Jeevan Jyoti Society", type:"Orphanage", city:"Delhi", state:"Delhi", desc:"Care home for 150 abandoned children offering schooling and medical care.", address:"B-14, Mehrauli, New Delhi – 110030", lat:28.5244, lng:77.1855, phone:"+91 99988 77665", email:"jeevan@jyotisociety.org", website:"www.jyotisociety.org", since:"2002", accent:"#A86FD4", beneficiaries:"1,500+", status:"pending", bank:{accName:"Jeevan Jyoti Society",accNum:"11122233344455",ifsc:"AXIS0001234",bankName:"Axis Bank",branch:"Mehrauli, Delhi",accType:"Savings",short:"AXIS"}, upi:{id:"jeevanjyoti@axl",name:"Jeevan Jyoti Society"}, portal:"https://jyotisociety.org/give", tags:["Children","Schooling","Medical Care"] },
-    { id:6, name:"Krishi Seva Samiti", type:"Trust", city:"Aurangabad", state:"Maharashtra", desc:"Supporting farmers through crop insurance, seed banks and water harvesting.", address:"Cidco Colony, N-6, Aurangabad – 431003", lat:19.8762, lng:75.3433, phone:"+91 94500 11223", email:"info@krishiseva.org", website:"www.krishiseva.org", since:"2007", accent:"#A8C44A", beneficiaries:"32,000+", status:"approved", bank:{accName:"Krishi Seva Samiti",accNum:"0987654321098",ifsc:"MAHB0001234",bankName:"Bank of Maharashtra",branch:"CIDCO, Aurangabad",accType:"Current",short:"BOM"}, upi:{id:"krishiseva@bom",name:"Krishi Seva Samiti"}, portal:"https://krishiseva.org/donate", tags:["Farmers","Water Harvesting","Helpline"] }
-  ],
-  events: [
-    { id:1, ngoId:1, title:"Winter Clothing Drive", desc:"Distribute warm clothing to 500+ families.", date:"2025-12-20", location:"Deccan Gymkhana, Pune", status:"active" },
-    { id:2, ngoId:2, title:"Free Medical Camp", desc:"Health check-up for children and senior citizens.", date:"2026-01-05", location:"Panchavati, Nashik", status:"active" },
-    { id:3, ngoId:3, title:"Tree Plantation Drive", desc:"Plant 1,000 native trees in Aarey Colony.", date:"2026-01-14", location:"Aarey Colony, Mumbai", status:"active" },
-    { id:4, ngoId:4, title:"Women Skill Fair", desc:"Showcase of handicrafts and NRLM products.", date:"2026-01-22", location:"Dharampeth, Nagpur", status:"active" },
-    { id:5, ngoId:5, title:"Annual Sports Meet", desc:"Inter-orphanage sports tournament.", date:"2026-02-01", location:"Mehrauli, Delhi", status:"active" },
-    { id:6, ngoId:6, title:"Farmer Awareness Camp", desc:"Soil testing and crop insurance guidance.", date:"2026-02-10", location:"CIDCO, Aurangabad", status:"active" }
-  ],
-  nextId: 7,
-  nextEventId: 7
-};
+// ── CREDENTIALS ──
+var ADMIN_USER = "admin";
+var ADMIN_PASS = "sevasangam2025";
 
-// ── STATE ──
-let loggedIn = false;
-let currentPage = "login";
-let editingNgo = null;
-let editingEvent = null;
-let activeTab = "ngos";
-let toast = null;
-let toastTimer = null;
-let filterStatus = "all";
-let searchQ = "";
+// ── DATA ──
+var NGOS = [
+  {id:1,name:"Asha Ki Kiran Trust",type:"NGO",city:"Pune",state:"Maharashtra",desc:"Empowering underprivileged women and children through education, skill training, and healthcare access since 2009.",address:"14, Deccan Gymkhana, Pune - 411004",phone:"+91 98765 43210",email:"info@ashakiran.org",website:"www.ashakiran.org",since:"2009",accent:"#5BAF73",beneficiaries:"12,400+",status:"approved",logo:null,photos:[],bank:{accName:"Asha Ki Kiran Trust",accNum:"30987654321",ifsc:"SBIN0012345",bankName:"State Bank of India",branch:"Deccan Gymkhana, Pune",accType:"Savings"},upi:{id:"ashakiran@sbi",name:"Asha Ki Kiran Trust"},portal:"https://ashakiran.org/donate",tags:["Women Empowerment","Education","Healthcare"]},
+  {id:2,name:"Shri Balak Ashram",type:"Orphanage",city:"Nashik",state:"Maharashtra",desc:"Providing shelter, education, and nutrition to 200+ orphaned children.",address:"Survey No. 45, Panchavati Colony, Nashik - 422003",phone:"+91 97654 32109",email:"shribalak@gmail.com",website:"www.shribalakashram.org",since:"1998",accent:"#D4A043",beneficiaries:"200+",status:"approved",logo:null,photos:[],bank:{accName:"Shri Balak Ashram",accNum:"12345678901234",ifsc:"PUNB0123456",bankName:"Punjab National Bank",branch:"Panchavati, Nashik",accType:"Current"},upi:{id:"balakashram@pnb",name:"Shri Balak Ashram"},portal:"https://shribalakashram.org/donate",tags:["Children","Shelter","Nutrition"]},
+  {id:3,name:"Green Future Foundation",type:"Trust",city:"Mumbai",state:"Maharashtra",desc:"Environmental NGO championing urban tree plantation and clean water access.",address:"Office 301, Andheri East, Mumbai - 400069",phone:"+91 91234 56789",email:"hello@greenfuture.in",website:"www.greenfuture.in",since:"2015",accent:"#7BC67A",beneficiaries:"85,000+",status:"pending",logo:null,photos:[],bank:{accName:"Green Future Foundation",accNum:"909876543210",ifsc:"HDFC0001234",bankName:"HDFC Bank",branch:"Andheri East, Mumbai",accType:"Current"},upi:{id:"greenfuture@hdfc",name:"Green Future Foundation"},portal:"https://greenfuture.in/support",tags:["Environment","Clean Water","Climate"]},
+  {id:4,name:"Disha Swayam Siddha",type:"NGO",city:"Nagpur",state:"Maharashtra",desc:"Rural women empowerment through microfinance and legal aid in Vidarbha.",address:"Plot 22, Dharampeth, Nagpur - 440010",phone:"+91 88765 12345",email:"disha@swayam.net",website:"www.dishaswayam.net",since:"2011",accent:"#4ABFBF",beneficiaries:"6,200+",status:"approved",logo:null,photos:[],bank:{accName:"Disha Swayam Siddha",accNum:"5678901234567",ifsc:"ICIC0001122",bankName:"ICICI Bank",branch:"Dharampeth, Nagpur",accType:"Savings"},upi:{id:"dishaswayam@icici",name:"Disha Swayam Siddha"},portal:"https://dishaswayam.net/donate",tags:["Microfinance","Rural Women","Legal Aid"]},
+  {id:5,name:"Jeevan Jyoti Society",type:"Orphanage",city:"Delhi",state:"Delhi",desc:"Care home for 150 abandoned children offering schooling and medical care.",address:"B-14, Mehrauli, New Delhi - 110030",phone:"+91 99988 77665",email:"jeevan@jyotisociety.org",website:"www.jyotisociety.org",since:"2002",accent:"#A86FD4",beneficiaries:"1,500+",status:"pending",logo:null,photos:[],bank:{accName:"Jeevan Jyoti Society",accNum:"11122233344455",ifsc:"AXIS0001234",bankName:"Axis Bank",branch:"Mehrauli, Delhi",accType:"Savings"},upi:{id:"jeevanjyoti@axl",name:"Jeevan Jyoti Society"},portal:"https://jyotisociety.org/give",tags:["Children","Schooling","Medical Care"]},
+  {id:6,name:"Krishi Seva Samiti",type:"Trust",city:"Aurangabad",state:"Maharashtra",desc:"Supporting farmers through crop insurance, seed banks and water harvesting.",address:"Cidco Colony, N-6, Aurangabad - 431003",phone:"+91 94500 11223",email:"info@krishiseva.org",website:"www.krishiseva.org",since:"2007",accent:"#A8C44A",beneficiaries:"32,000+",status:"approved",logo:null,photos:[],bank:{accName:"Krishi Seva Samiti",accNum:"0987654321098",ifsc:"MAHB0001234",bankName:"Bank of Maharashtra",branch:"CIDCO, Aurangabad",accType:"Current"},upi:{id:"krishiseva@bom",name:"Krishi Seva Samiti"},portal:"https://krishiseva.org/donate",tags:["Farmers","Water Harvesting","Helpline"]}
+];
+var EVENTS = [
+  {id:1,ngoId:1,title:"Winter Clothing Drive",desc:"Distribute warm clothing to 500+ families.",date:"2025-12-20",location:"Deccan Gymkhana, Pune"},
+  {id:2,ngoId:2,title:"Free Medical Camp",desc:"Health check-up for children and senior citizens.",date:"2026-01-05",location:"Panchavati, Nashik"},
+  {id:3,ngoId:3,title:"Tree Plantation Drive",desc:"Plant 1,000 native trees in Aarey Colony.",date:"2026-01-14",location:"Aarey Colony, Mumbai"},
+  {id:4,ngoId:4,title:"Women Skill Fair",desc:"Showcase of handicrafts and NRLM products.",date:"2026-01-22",location:"Dharampeth, Nagpur"},
+  {id:5,ngoId:5,title:"Annual Sports Meet",desc:"Inter-orphanage sports tournament.",date:"2026-02-01",location:"Mehrauli, Delhi"},
+  {id:6,ngoId:6,title:"Farmer Awareness Camp",desc:"Soil testing and crop insurance guidance.",date:"2026-02-10",location:"CIDCO, Aurangabad"}
+];
+var nextNgoId = 7;
+var nextEvId  = 7;
+var activeTab = "ngos";
+var ngoFilter = "all";
+var ngoSearch = "";
+var toastTimer;
+var modalLogo   = null;
+var modalPhotos = [];
+var editNgoId   = null;
+var editEvId    = null;
 
-// ── HELPERS ──
-function $(id){ return document.getElementById(id); }
-function showToast(msg, type="success"){
+// ── UTILS ──
+function esc(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function gv(id){ var e=document.getElementById(id); return e ? e.value.trim() : ""; }
+function ge(id){ return document.getElementById(id); }
+function ngoName(id){ var n=NGOS.find(function(x){return x.id===id;}); return n?n.name:"Unknown"; }
+
+function toast(msg, type){
   clearTimeout(toastTimer);
-  const el = $("toast");
-  el.textContent = (type==="success"?"✓ ":"⚠ ") + msg;
-  el.style.background = type==="success"?"#5BAF73":"#C4613A";
-  el.style.transform = "translateY(0)"; el.style.opacity = "1";
-  toastTimer = setTimeout(()=>{ el.style.transform="translateY(24px)"; el.style.opacity="0"; }, 2800);
+  var t=ge("toast");
+  t.textContent=(type==="error"?"⚠ ":"✓ ")+msg;
+  t.style.background=type==="error"?"#C4613A":"#5BAF73";
+  t.style.opacity="1"; t.style.transform="translateY(0)";
+  toastTimer=setTimeout(function(){ t.style.opacity="0"; t.style.transform="translateY(24px)"; },2800);
 }
-function getNgoName(id){ const n=STORE.ngos.find(x=>x.id===id); return n?n.name:"Unknown"; }
-function escH(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
-// ── RENDER ──
-function render(){
-  const app = document.getElementById("app");
-  if(currentPage==="login") { app.innerHTML = renderLogin(); bindLogin(); return; }
-  app.innerHTML = renderShell();
-  bindShell();
-  renderContent();
+function updateStats(){
+  var ap=NGOS.filter(function(n){return n.status==="approved";}).length;
+  var pd=NGOS.filter(function(n){return n.status==="pending";}).length;
+  ge("statTotal").textContent=NGOS.length;
+  ge("statApproved").textContent=ap;
+  ge("statPending").textContent=pd;
+  ge("statEvents").textContent=EVENTS.length;
+  var badge=ge("pendingBadge");
+  if(pd>0){ badge.textContent=pd; badge.style.display="inline"; }
+  else { badge.style.display="none"; }
 }
 
 // ── LOGIN ──
-function renderLogin(){
-  return `
-  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0D1F14;position:relative;overflow:hidden;">
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(91,175,115,0.12) 0%,transparent 65%);"></div>
-    <svg style="position:absolute;inset:0;width:100%;height:100%;opacity:0.04"><defs><pattern id="g" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0L0 0 0 60" fill="none" stroke="#5BAF73" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>
-    <div class="fade-up" style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 40px 100px rgba(0,0,0,0.5);">
-      <div style="text-align:center;margin-bottom:2rem;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:#FDFAF4;">Seva<span style="color:#D4A043;">Sangam</span></div>
-        <div style="font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(253,250,244,0.4);margin-top:0.4rem;">Admin Dashboard</div>
-      </div>
-      <div id="loginErr" style="display:none;background:rgba(196,97,58,0.15);border:1px solid rgba(196,97,58,0.4);border-radius:6px;padding:0.7rem 1rem;font-size:0.83rem;color:#E07050;margin-bottom:1rem;"></div>
-      <div style="margin-bottom:1rem;">
-        <label style="font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.45);font-weight:600;display:block;margin-bottom:0.4rem;">Username</label>
-        <input id="loginUser" type="text" placeholder="admin" value="admin"
-          style="width:100%;padding:0.75rem 1rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.9rem;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"/>
-      </div>
-      <div style="margin-bottom:1.5rem;">
-        <label style="font-size:0.72rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.45);font-weight:600;display:block;margin-bottom:0.4rem;">Password</label>
-        <input id="loginPass" type="password" placeholder="••••••••"
-          style="width:100%;padding:0.75rem 1rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.9rem;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"
-          onkeydown="if(event.key==='Enter')doLogin()"/>
-      </div>
-      <button onclick="doLogin()" style="width:100%;padding:0.85rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.95rem;font-weight:600;box-shadow:0 4px 20px rgba(91,175,115,0.35);transition:all 0.2s;"
-        onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-        Sign In →
-      </button>
-      <div style="text-align:center;margin-top:1.5rem;font-size:0.76rem;color:rgba(253,250,244,0.3);">Default: admin / sevasangam2025</div>
-      <div style="text-align:center;margin-top:0.8rem;">
-        <a href="index.html" style="font-size:0.78rem;color:#5BAF73;">← Back to SevaSangam</a>
-      </div>
-    </div>
-  </div>`;
-}
-
-function bindLogin(){
-  // auto focus
-  setTimeout(()=>{ const p=$("loginPass"); if(p)p.focus(); },100);
-}
+ge("loginBtn").addEventListener("click", doLogin);
+ge("loginPass").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
 
 function doLogin(){
-  const u=$("loginUser").value.trim();
-  const p=$("loginPass").value.trim();
-  if(u===STORE.admin.user && p===STORE.admin.pass){
-    loggedIn=true; currentPage="dashboard"; render();
+  var u=gv("loginUser"), p=gv("loginPass");
+  if(u===ADMIN_USER && p===ADMIN_PASS){
+    ge("loginErr").style.display="none";
+    ge("loginPage").classList.remove("active");
+    ge("dashPage").classList.add("active");
+    ge("adminNameEl").textContent=ADMIN_USER;
+    updateStats();
+    switchTab("ngos");
   } else {
-    const err=$("loginErr");
-    err.textContent="Invalid username or password. Please try again.";
-    err.style.display="block";
+    ge("loginErr").textContent="Incorrect username or password.";
+    ge("loginErr").style.display="block";
+    ge("loginPass").value="";
+    ge("loginPass").focus();
   }
 }
 
-// ── SHELL ──
-function renderShell(){
-  const approved = STORE.ngos.filter(n=>n.status==="approved").length;
-  const pending  = STORE.ngos.filter(n=>n.status==="pending").length;
-  return `
-  <div style="display:flex;min-height:100vh;">
-    <!-- Sidebar -->
-    <aside style="width:240px;background:#080F0A;border-right:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;z-index:100;">
-      <div style="padding:1.5rem 1.4rem;border-bottom:1px solid rgba(255,255,255,0.07);">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:#FDFAF4;">Seva<span style="color:#D4A043;">Sangam</span></div>
-        <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(253,250,244,0.35);margin-top:0.2rem;">Admin Panel</div>
-      </div>
-      <nav style="padding:1rem 0.8rem;flex:1;">
-        ${["ngos","events","pending","settings"].map(tab=>{
-          const icons={"ngos":"🏛","events":"📅","pending":"⏳","settings":"⚙️"};
-          const labels={"ngos":"Organizations","events":"Events","pending":`Approvals <span style='background:#C4613A;color:#fff;font-size:0.6rem;padding:0.1rem 0.4rem;border-radius:10px;margin-left:0.3rem;'>${pending}</span>`,"settings":"Settings"};
-          const active=activeTab===tab;
-          return `<button onclick="setTab('${tab}')" style="width:100%;text-align:left;padding:0.7rem 0.8rem;border-radius:6px;border:none;background:${active?"rgba(91,175,115,0.15)":"transparent"};color:${active?"#A8DFBA":"rgba(253,250,244,0.5)"};font-size:0.85rem;font-weight:${active?"600":"400"};display:flex;align-items:center;gap:0.6rem;margin-bottom:0.2rem;transition:all 0.2s;border-left:2px solid ${active?"#5BAF73":"transparent"};"
-            onmouseover="if('${tab}'!=='${activeTab}')this.style.background='rgba(255,255,255,0.04)'"
-            onmouseout="if('${tab}'!=='${activeTab}')this.style.background='transparent'">
-            ${icons[tab]} ${labels[tab]}
-          </button>`;
-        }).join("")}
-      </nav>
-      <div style="padding:1rem 1.4rem;border-top:1px solid rgba(255,255,255,0.07);">
-        <div style="font-size:0.76rem;color:rgba(253,250,244,0.35);margin-bottom:0.6rem;">Signed in as <strong style="color:rgba(253,250,244,0.6);">${STORE.admin.user}</strong></div>
-        <button onclick="doLogout()" style="width:100%;padding:0.5rem;background:rgba(196,97,58,0.15);border:1px solid rgba(196,97,58,0.3);border-radius:5px;color:#E07050;font-size:0.8rem;transition:all 0.2s;"
-          onmouseover="this.style.background='rgba(196,97,58,0.25)'" onmouseout="this.style.background='rgba(196,97,58,0.15)'">Sign Out</button>
-        <a href="index.html" style="display:block;text-align:center;margin-top:0.5rem;font-size:0.75rem;color:#5BAF73;">← Public Site</a>
-      </div>
-    </aside>
-
-    <!-- Main -->
-    <main style="margin-left:240px;flex:1;padding:2rem;min-height:100vh;">
-      <!-- Top bar -->
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;">
-        <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:#FDFAF4;" id="pageTitle">Dashboard</div>
-          <div style="font-size:0.78rem;color:rgba(253,250,244,0.4);margin-top:0.2rem;" id="pageSubtitle">Manage your platform content</div>
-        </div>
-        <div style="display:flex;gap:0.8rem;" id="topActions"></div>
-      </div>
-
-      <!-- Stats row -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;">
-        ${[
-          ["Total NGOs",STORE.ngos.length,"🏛","#5BAF73"],
-          ["Approved",approved,"✅","#A8C44A"],
-          ["Pending",pending,"⏳","#F0B84A"],
-          ["Events",STORE.events.length,"📅","#4ABFBF"]
-        ].map(([l,v,icon,c])=>`
-        <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1.2rem;border-top:2px solid ${c}30;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <div style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;margin-bottom:0.4rem;">${l}</div>
-              <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:#FDFAF4;">${v}</div>
-            </div>
-            <div style="font-size:1.8rem;opacity:0.7;">${icon}</div>
-          </div>
-        </div>`).join("")}
-      </div>
-
-      <!-- Content area -->
-      <div id="contentArea" class="fade-up"></div>
-    </main>
-  </div>
-
-  <!-- Toast -->
-  <div id="toast" style="position:fixed;bottom:2rem;right:2rem;z-index:9999;background:#5BAF73;color:#fff;padding:0.8rem 1.6rem;border-radius:8px;font-size:0.88rem;font-weight:600;box-shadow:0 12px 40px rgba(0,0,0,0.4);transform:translateY(24px);opacity:0;transition:all 0.3s;pointer-events:none;"></div>
-
-  <!-- Modal backdrop -->
-  <div id="modalBackdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);z-index:500;align-items:center;justify-content:center;padding:1rem;">
-    <div id="modalBox" style="background:#111F17;border:1px solid rgba(255,255,255,0.1);border-radius:16px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 40px 100px rgba(0,0,0,0.6);"></div>
-  </div>`;
+function doLogout(){
+  ge("dashPage").classList.remove("active");
+  ge("loginPage").classList.add("active");
+  ge("loginPass").value="";
+  ge("loginErr").style.display="none";
 }
 
-function bindShell(){
-  $("modalBackdrop").addEventListener("click", function(e){ if(e.target===this) closeModal(); });
-}
+// ── TAB ──
+var TAB_META={
+  ngos:    {title:"Organizations",     sub:"Add, edit or remove NGO listings"},
+  events:  {title:"Events",            sub:"Manage upcoming events and drives"},
+  pending: {title:"Pending Approvals", sub:"Review and approve new submissions"},
+  settings:{title:"Settings",          sub:"Platform configuration"}
+};
 
-function setTab(tab){ activeTab=tab; filterStatus="all"; searchQ=""; renderContent(); }
-function doLogout(){ loggedIn=false; currentPage="login"; render(); }
-
-function renderContent(){
-  const titles={"ngos":"Organizations","events":"Events","pending":"Pending Approvals","settings":"Settings"};
-  const subs={"ngos":"Add, edit or remove NGO listings","events":"Manage upcoming events & drives","pending":"Review and approve new NGO submissions","settings":"Platform configuration"};
-  if($("pageTitle")) $("pageTitle").textContent = titles[activeTab]||"";
-  if($("pageSubtitle")) $("pageSubtitle").textContent = subs[activeTab]||"";
-
-  if(activeTab==="ngos") renderNGOTab();
-  else if(activeTab==="events") renderEventsTab();
-  else if(activeTab==="pending") renderPendingTab();
-  else if(activeTab==="settings") renderSettingsTab();
+function switchTab(tab){
+  activeTab=tab;
+  ["ngos","events","pending","settings"].forEach(function(t){
+    ge("tab-"+t).classList.toggle("active",t===tab);
+    ge("panel-"+t).classList.toggle("active",t===tab);
+  });
+  var m=TAB_META[tab]||{};
+  ge("tabTitle").textContent=m.title||"";
+  ge("tabSub").textContent=m.sub||"";
+  ge("topActions").innerHTML="";
+  if(tab==="ngos")    { buildNgoActions(); renderNgoTable(); }
+  if(tab==="events")  { buildEvActions();  renderEvTable(); }
+  if(tab==="pending") { renderPending(); }
+  if(tab==="settings"){ renderSettingsStats(); }
 }
 
 // ── NGO TAB ──
-function renderNGOTab(){
-  const ca=$("contentArea"); const ta=$("topActions");
-  ta.innerHTML=`
-    <input id="ngoSearch" placeholder="Search NGOs…" value="${escH(searchQ)}"
-      style="padding:0.5rem 1rem;background:#162A1D;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#FDFAF4;font-size:0.85rem;width:200px;"
-      oninput="searchQ=this.value;renderNGOTab()"/>
-    <select id="ngoFilter" onchange="filterStatus=this.value;renderNGOTab()"
-      style="padding:0.5rem 0.8rem;background:#162A1D;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#FDFAF4;font-size:0.85rem;">
-      <option value="all" ${filterStatus==="all"?"selected":""}>All Status</option>
-      <option value="approved" ${filterStatus==="approved"?"selected":""}>Approved</option>
-      <option value="pending" ${filterStatus==="pending"?"selected":""}>Pending</option>
-    </select>
-    <button onclick="openNGOForm(null)" style="padding:0.5rem 1.2rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.85rem;font-weight:600;">+ Add NGO</button>`;
+function buildNgoActions(){
+  var ta=ge("topActions");
+  // Search input
+  var si=document.createElement("input");
+  si.className="fi"; si.placeholder="Search..."; si.value=ngoSearch;
+  si.style.cssText="width:170px;padding:0.48rem 0.9rem;";
+  si.addEventListener("input",function(){ ngoSearch=this.value; renderNgoTable(); });
+  // Filter select
+  var fs=document.createElement("select");
+  fs.className="fi"; fs.style.cssText="width:auto;padding:0.48rem 0.8rem;cursor:pointer;";
+  [["all","All Status"],["approved","Approved"],["pending","Pending"]].forEach(function(o){
+    var opt=document.createElement("option");
+    opt.value=o[0]; opt.textContent=o[1]; opt.style.background="#0D1F14";
+    if(o[0]===ngoFilter) opt.selected=true;
+    fs.appendChild(opt);
+  });
+  fs.addEventListener("change",function(){ ngoFilter=this.value; renderNgoTable(); });
+  // Add button
+  var ab=document.createElement("button");
+  ab.className="btn-primary"; ab.textContent="+ Add NGO";
+  ab.style.cssText="padding:0.5rem 1.1rem;font-size:0.84rem;";
+  ab.addEventListener("click",function(){ openNgoForm(null); });
+  ta.appendChild(si); ta.appendChild(fs); ta.appendChild(ab);
+}
 
-  let list = STORE.ngos;
-  if(filterStatus!=="all") list=list.filter(n=>n.status===filterStatus);
-  if(searchQ) list=list.filter(n=>n.name.toLowerCase().includes(searchQ.toLowerCase())||n.city.toLowerCase().includes(searchQ.toLowerCase()));
-
-  ca.innerHTML=`
-  <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;overflow:hidden;">
-    <table style="width:100%;border-collapse:collapse;">
-      <thead>
-        <tr style="background:#0D1F14;border-bottom:1px solid rgba(255,255,255,0.07);">
-          ${["Organization","Type","City","Status","Actions"].map(h=>`<th style="padding:0.9rem 1rem;text-align:left;font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;">${h}</th>`).join("")}
-        </tr>
-      </thead>
-      <tbody>
-        ${list.length===0?`<tr><td colspan="5" style="padding:2rem;text-align:center;color:rgba(253,250,244,0.3);">No organizations found</td></tr>`:
-        list.map(n=>`
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-          <td style="padding:0.9rem 1rem;">
-            <div style="font-weight:600;color:#FDFAF4;font-size:0.9rem;">${escH(n.name)}</div>
-            <div style="font-size:0.75rem;color:rgba(253,250,244,0.4);margin-top:0.1rem;">${escH(n.email)}</div>
-          </td>
-          <td style="padding:0.9rem 1rem;"><span style="background:${n.accent}1E;color:${n.accent};padding:0.2rem 0.6rem;border-radius:3px;font-size:0.72rem;font-weight:600;">${escH(n.type)}</span></td>
-          <td style="padding:0.9rem 1rem;font-size:0.85rem;color:rgba(253,250,244,0.6);">${escH(n.city)}</td>
-          <td style="padding:0.9rem 1rem;">
-            <span style="background:${n.status==="approved"?"rgba(168,196,74,0.15)":"rgba(240,184,74,0.15)"};color:${n.status==="approved"?"#A8C44A":"#F0B84A"};padding:0.2rem 0.7rem;border-radius:10px;font-size:0.72rem;font-weight:600;">
-              ${n.status==="approved"?"✓ Approved":"⏳ Pending"}
-            </span>
-          </td>
-          <td style="padding:0.9rem 1rem;">
-            <div style="display:flex;gap:0.4rem;">
-              <button onclick="openNGOForm(${n.id})" style="padding:0.3rem 0.7rem;background:rgba(91,175,115,0.15);border:1px solid rgba(91,175,115,0.3);border-radius:4px;color:#5BAF73;font-size:0.75rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(91,175,115,0.3)'" onmouseout="this.style.background='rgba(91,175,115,0.15)'">Edit</button>
-              ${n.status==="pending"?`<button onclick="approveNGO(${n.id})" style="padding:0.3rem 0.7rem;background:rgba(168,196,74,0.15);border:1px solid rgba(168,196,74,0.3);border-radius:4px;color:#A8C44A;font-size:0.75rem;transition:all 0.2s;">Approve</button>`:""}
-              <button onclick="deleteNGO(${n.id})" style="padding:0.3rem 0.7rem;background:rgba(196,97,58,0.12);border:1px solid rgba(196,97,58,0.25);border-radius:4px;color:#C4613A;font-size:0.75rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(196,97,58,0.25)'" onmouseout="this.style.background='rgba(196,97,58,0.12)'">Delete</button>
-            </div>
-          </td>
-        </tr>`).join("")}
-      </tbody>
-    </table>
-  </div>`;
+function renderNgoTable(){
+  var list=NGOS.slice();
+  if(ngoFilter!=="all") list=list.filter(function(n){return n.status===ngoFilter;});
+  if(ngoSearch){ var q=ngoSearch.toLowerCase(); list=list.filter(function(n){return n.name.toLowerCase().indexOf(q)>-1||n.city.toLowerCase().indexOf(q)>-1;}); }
+  var tbody=ge("ngoBody");
+  if(!list.length){ tbody.innerHTML='<tr><td colspan="6" style="padding:2.5rem;text-align:center;color:rgba(253,250,244,0.28);">No organizations found</td></tr>'; return; }
+  tbody.innerHTML="";
+  list.forEach(function(n){
+    var tr=document.createElement("tr");
+    // Avatar
+    var tdA=document.createElement("td");
+    if(n.logo){ var img=document.createElement("img"); img.src=n.logo; img.style.cssText="width:38px;height:38px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(255,255,255,0.1);"; tdA.appendChild(img); }
+    else { tdA.innerHTML="<div style='width:38px;height:38px;border-radius:50%;background:"+n.accent+"22;border:1.5px solid "+n.accent+"44;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:"+n.accent+";'>" + esc(n.name[0]) + "</div>"; }
+    // Name/email
+    var tdN=document.createElement("td");
+    tdN.innerHTML='<div style="font-weight:600;color:#FDFAF4;">'+esc(n.name)+'</div><div style="font-size:0.72rem;color:rgba(253,250,244,0.38);">'+esc(n.email)+'</div>';
+    // Type
+    var tdT=document.createElement("td");
+    tdT.innerHTML='<span style="background:'+n.accent+'1E;color:'+n.accent+';padding:0.18rem 0.55rem;border-radius:3px;font-size:0.7rem;font-weight:600;">'+esc(n.type)+'</span>';
+    // City
+    var tdC=document.createElement("td");
+    tdC.textContent=n.city; tdC.style.color="rgba(253,250,244,0.55)";
+    // Status
+    var tdS=document.createElement("td");
+    if(n.status==="approved") tdS.innerHTML='<span style="background:rgba(168,196,74,0.14);color:#A8C44A;padding:0.18rem 0.65rem;border-radius:10px;font-size:0.7rem;font-weight:600;">&#10003; Approved</span>';
+    else tdS.innerHTML='<span style="background:rgba(240,184,74,0.14);color:#F0B84A;padding:0.18rem 0.65rem;border-radius:10px;font-size:0.7rem;font-weight:600;">&#9203; Pending</span>';
+    // Actions
+    var tdAc=document.createElement("td");
+    var wrap=document.createElement("div"); wrap.style.cssText="display:flex;gap:0.35rem;";
+    var eb=document.createElement("button"); eb.className="btn-sm-edit"; eb.textContent="Edit";
+    (function(nid){ eb.addEventListener("click",function(){ openNgoForm(nid); }); })(n.id);
+    wrap.appendChild(eb);
+    if(n.status==="pending"){
+      var apb=document.createElement("button"); apb.className="btn-sm-apr"; apb.textContent="Approve";
+      (function(nid){ apb.addEventListener("click",function(){ approveNgo(nid); }); })(n.id);
+      wrap.appendChild(apb);
+    }
+    var db=document.createElement("button"); db.className="btn-sm-del"; db.textContent="Delete";
+    (function(nid){ db.addEventListener("click",function(){ deleteNgo(nid); }); })(n.id);
+    wrap.appendChild(db); tdAc.appendChild(wrap);
+    tr.appendChild(tdA); tr.appendChild(tdN); tr.appendChild(tdT); tr.appendChild(tdC); tr.appendChild(tdS); tr.appendChild(tdAc);
+    tbody.appendChild(tr);
+  });
 }
 
 // ── EVENTS TAB ──
-function renderEventsTab(){
-  const ta=$("topActions");
-  ta.innerHTML=`<button onclick="openEventForm(null)" style="padding:0.5rem 1.2rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.85rem;font-weight:600;">+ Add Event</button>`;
-  $("contentArea").innerHTML=`
-  <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;overflow:hidden;">
-    <table style="width:100%;border-collapse:collapse;">
-      <thead><tr style="background:#0D1F14;border-bottom:1px solid rgba(255,255,255,0.07);">
-        ${["Event","Organization","Date","Location","Actions"].map(h=>`<th style="padding:0.9rem 1rem;text-align:left;font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;">${h}</th>`).join("")}
-      </tr></thead>
-      <tbody>
-        ${STORE.events.map(ev=>`
-        <tr style="border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-          <td style="padding:0.9rem 1rem;"><div style="font-weight:600;color:#FDFAF4;font-size:0.9rem;">${escH(ev.title)}</div><div style="font-size:0.75rem;color:rgba(253,250,244,0.4);margin-top:0.1rem;">${escH(ev.desc.substring(0,50))}…</div></td>
-          <td style="padding:0.9rem 1rem;font-size:0.82rem;color:#5BAF73;">${escH(getNgoName(ev.ngoId))}</td>
-          <td style="padding:0.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:rgba(253,250,244,0.6);">${ev.date}</td>
-          <td style="padding:0.9rem 1rem;font-size:0.82rem;color:rgba(253,250,244,0.6);">${escH(ev.location)}</td>
-          <td style="padding:0.9rem 1rem;"><div style="display:flex;gap:0.4rem;">
-            <button onclick="openEventForm(${ev.id})" style="padding:0.3rem 0.7rem;background:rgba(91,175,115,0.15);border:1px solid rgba(91,175,115,0.3);border-radius:4px;color:#5BAF73;font-size:0.75rem;">Edit</button>
-            <button onclick="deleteEvent(${ev.id})" style="padding:0.3rem 0.7rem;background:rgba(196,97,58,0.12);border:1px solid rgba(196,97,58,0.25);border-radius:4px;color:#C4613A;font-size:0.75rem;">Delete</button>
-          </div></td>
-        </tr>`).join("")}
-      </tbody>
-    </table>
-  </div>`;
+function buildEvActions(){
+  var ab=document.createElement("button"); ab.className="btn-primary"; ab.textContent="+ Add Event";
+  ab.style.cssText="padding:0.5rem 1.1rem;font-size:0.84rem;";
+  ab.addEventListener("click",function(){ openEvForm(null); });
+  ge("topActions").appendChild(ab);
+}
+
+function renderEvTable(){
+  var tbody=ge("evBody");
+  if(!EVENTS.length){ tbody.innerHTML='<tr><td colspan="5" style="padding:2.5rem;text-align:center;color:rgba(253,250,244,0.28);">No events found</td></tr>'; return; }
+  tbody.innerHTML="";
+  EVENTS.forEach(function(ev){
+    var tr=document.createElement("tr");
+    var tdT=document.createElement("td"); tdT.innerHTML='<div style="font-weight:600;color:#FDFAF4;">'+esc(ev.title)+'</div><div style="font-size:0.72rem;color:rgba(253,250,244,0.38);">'+(ev.desc||"").substring(0,48)+'...</div>';
+    var tdO=document.createElement("td"); tdO.textContent=ngoName(ev.ngoId); tdO.style.color="#5BAF73"; tdO.style.fontSize="0.81rem";
+    var tdD=document.createElement("td"); tdD.textContent=ev.date; tdD.style.cssText="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:rgba(253,250,244,0.55);";
+    var tdL=document.createElement("td"); tdL.textContent=ev.location; tdL.style.cssText="font-size:0.81rem;color:rgba(253,250,244,0.55);";
+    var tdA=document.createElement("td");
+    var wrap=document.createElement("div"); wrap.style.cssText="display:flex;gap:0.35rem;";
+    var eb=document.createElement("button"); eb.className="btn-sm-edit"; eb.textContent="Edit";
+    (function(eid){ eb.addEventListener("click",function(){ openEvForm(eid); }); })(ev.id);
+    var db=document.createElement("button"); db.className="btn-sm-del"; db.textContent="Delete";
+    (function(eid){ db.addEventListener("click",function(){ deleteEv(eid); }); })(ev.id);
+    wrap.appendChild(eb); wrap.appendChild(db); tdA.appendChild(wrap);
+    tr.appendChild(tdT); tr.appendChild(tdO); tr.appendChild(tdD); tr.appendChild(tdL); tr.appendChild(tdA);
+    tbody.appendChild(tr);
+  });
 }
 
 // ── PENDING TAB ──
-function renderPendingTab(){
-  $("topActions").innerHTML="";
-  const pending=STORE.ngos.filter(n=>n.status==="pending");
-  $("contentArea").innerHTML = pending.length===0
-    ? `<div style="text-align:center;padding:4rem;color:rgba(253,250,244,0.3);font-size:1.1rem;">🎉 No pending approvals</div>`
-    : `<div style="display:grid;gap:1rem;">
-      ${pending.map(n=>`
-      <div style="background:#111F17;border:1px solid rgba(240,184,74,0.2);border-radius:10px;padding:1.4rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;">
-        <div style="flex:1;">
-          <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:0.5rem;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:#FDFAF4;">${escH(n.name)}</div>
-            <span style="background:rgba(74,191,191,0.15);color:#4ABFBF;padding:0.18rem 0.55rem;border-radius:3px;font-size:0.68rem;font-weight:600;">${n.type}</span>
-          </div>
-          <div style="font-size:0.82rem;color:rgba(253,250,244,0.5);margin-bottom:0.4rem;">${escH(n.city)}, ${escH(n.state)} · ${escH(n.email)} · ${escH(n.phone)}</div>
-          <div style="font-size:0.8rem;color:rgba(253,250,244,0.4);">${escH(n.desc.substring(0,120))}…</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:0.5rem;min-width:110px;">
-          <button onclick="approveNGO(${n.id})" style="padding:0.5rem 1rem;background:linear-gradient(135deg,#A8C44A,#7A9A30);color:#fff;border:none;border-radius:5px;font-size:0.82rem;font-weight:600;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">✓ Approve</button>
-          <button onclick="rejectNGO(${n.id})" style="padding:0.5rem 1rem;background:rgba(196,97,58,0.15);border:1px solid rgba(196,97,58,0.3);border-radius:5px;color:#C4613A;font-size:0.82rem;font-weight:600;">✕ Reject</button>
-        </div>
-      </div>`).join("")}
-    </div>`;
+function renderPending(){
+  var c=ge("pendingList"); c.innerHTML="";
+  var list=NGOS.filter(function(n){return n.status==="pending";});
+  if(!list.length){ c.innerHTML='<div style="text-align:center;padding:4rem;color:rgba(253,250,244,0.3);font-size:1.05rem;">&#127881; No pending approvals</div>'; return; }
+  list.forEach(function(n){
+    var card=document.createElement("div"); card.className="pending-card";
+    var info=document.createElement("div"); info.style.cssText="display:flex;gap:1rem;align-items:center;flex:1;min-width:0;";
+    var ava=document.createElement("div");
+    if(n.logo){ ava.innerHTML='<img src="'+n.logo+'" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.1);" alt=""/>'; }
+    else { ava.innerHTML='<div style="width:52px;height:52px;border-radius:50%;background:'+n.accent+'22;border:2px solid '+n.accent+'44;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700;color:'+n.accent+';flex-shrink:0;">'+esc(n.name[0])+'</div>'; }
+    var txt=document.createElement("div"); txt.style.minWidth="0";
+    txt.innerHTML='<div style="font-family:Outfit,sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.2rem;">'+esc(n.name)+'</div><div style="font-size:0.8rem;color:rgba(253,250,244,0.45);">'+esc(n.city)+', '+esc(n.state)+' &bull; '+esc(n.email)+'</div><div style="font-size:0.78rem;color:rgba(253,250,244,0.35);margin-top:0.15rem;">'+(n.desc||'').substring(0,100)+'...</div>';
+    info.appendChild(ava); info.appendChild(txt);
+    var acts=document.createElement("div"); acts.style.cssText="display:flex;flex-direction:column;gap:0.5rem;min-width:100px;";
+    var apb=document.createElement("button"); apb.style.cssText="background:linear-gradient(135deg,#A8C44A,#7A9A30);color:#fff;border:none;border-radius:5px;padding:0.5rem 1rem;font-size:0.8rem;font-weight:600;cursor:pointer;"; apb.textContent="✓ Approve";
+    var reb=document.createElement("button"); reb.style.cssText="background:rgba(196,97,58,0.14);border:1px solid rgba(196,97,58,0.3);border-radius:5px;padding:0.5rem 1rem;font-size:0.8rem;font-weight:600;cursor:pointer;color:#C4613A;"; reb.textContent="✕ Reject";
+    (function(nid){ apb.addEventListener("click",function(){ approveNgo(nid); }); reb.addEventListener("click",function(){ rejectNgo(nid); }); })(n.id);
+    acts.appendChild(apb); acts.appendChild(reb);
+    card.appendChild(info); card.appendChild(acts); c.appendChild(card);
+  });
 }
 
-// ── SETTINGS TAB ──
-function renderSettingsTab(){
-  $("topActions").innerHTML="";
-  $("contentArea").innerHTML=`
-  <div style="max-width:500px;">
-    <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1.8rem;margin-bottom:1.2rem;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:#FDFAF4;margin-bottom:1.2rem;">Change Admin Password</div>
-      <div style="margin-bottom:0.9rem;">
-        <label style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.4rem;">Current Password</label>
-        <input id="curPass" type="password" style="width:100%;padding:0.7rem 1rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.88rem;" onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"/>
-      </div>
-      <div style="margin-bottom:0.9rem;">
-        <label style="font-size:0.7rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.4rem;">New Password</label>
-        <input id="newPass" type="password" style="width:100%;padding:0.7rem 1rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.88rem;" onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"/>
-      </div>
-      <button onclick="changePass()" style="padding:0.65rem 1.5rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.88rem;font-weight:600;">Update Password</button>
-    </div>
-    <div style="background:#111F17;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1.8rem;">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:#FDFAF4;margin-bottom:0.8rem;">Platform Info</div>
-      ${[["Total NGOs",STORE.ngos.length],["Approved",STORE.ngos.filter(x=>x.status==="approved").length],["Pending",STORE.ngos.filter(x=>x.status==="pending").length],["Total Events",STORE.events.length]].map(([k,v])=>`
-      <div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px dashed rgba(255,255,255,0.06);">
-        <span style="font-size:0.85rem;color:rgba(253,250,244,0.5);">${k}</span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;color:#5BAF73;">${v}</span>
-      </div>`).join("")}
-    </div>
-  </div>`;
+// ── SETTINGS ──
+function renderSettingsStats(){
+  var rows=[["Total NGOs",NGOS.length],["Approved",NGOS.filter(function(x){return x.status==="approved";}).length],["Pending",NGOS.filter(function(x){return x.status==="pending";}).length],["Total Events",EVENTS.length]];
+  ge("settingsStats").innerHTML=rows.map(function(r){
+    return '<div style="display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px dashed rgba(255,255,255,0.05);"><span style="font-size:0.84rem;color:rgba(253,250,244,0.48);">'+r[0]+'</span><span style="font-size:0.84rem;color:#5BAF73;font-weight:600;">'+r[1]+'</span></div>';
+  }).join("");
 }
 
 function changePass(){
-  const cur=$("curPass").value, nw=$("newPass").value;
-  if(cur!==STORE.admin.pass){ showToast("Current password is incorrect","error"); return; }
-  if(nw.length<6){ showToast("New password must be at least 6 characters","error"); return; }
-  STORE.admin.pass=nw; showToast("Password updated successfully");
+  var cur=gv("curPass"),nw=gv("newPass"),con=gv("conPass");
+  if(cur!==ADMIN_PASS){ toast("Current password is incorrect","error"); return; }
+  if(nw.length<6){ toast("New password must be 6+ characters","error"); return; }
+  if(nw!==con){ toast("Passwords do not match","error"); return; }
+  ADMIN_PASS=nw; ge("curPass").value=ge("newPass").value=ge("conPass").value="";
+  toast("Password updated successfully");
 }
 
 // ── NGO CRUD ──
-function approveNGO(id){ const n=STORE.ngos.find(x=>x.id===id); if(n){ n.status="approved"; renderContent(); showToast(`${n.name} approved`); render(); } }
-function rejectNGO(id){ if(confirm("Reject and delete this submission?")){ STORE.ngos=STORE.ngos.filter(x=>x.id!==id); renderContent(); showToast("Submission rejected"); render(); } }
-function deleteNGO(id){ const n=STORE.ngos.find(x=>x.id===id); if(n&&confirm(`Delete "${n.name}"? This cannot be undone.`)){ STORE.ngos=STORE.ngos.filter(x=>x.id!==id); STORE.events=STORE.events.filter(e=>e.ngoId!==id); renderContent(); showToast(`${n.name} deleted`); render(); } }
-function deleteEvent(id){ const e=STORE.events.find(x=>x.id===id); if(e&&confirm(`Delete event "${e.title}"?`)){ STORE.events=STORE.events.filter(x=>x.id!==id); renderEventsTab(); showToast("Event deleted"); } }
-
-// ── NGO FORM MODAL ──
-function openNGOForm(id){ adminLogoDataUrl=null; adminPhotos=[]; 
-  const n = id ? STORE.ngos.find(x=>x.id===id) : null;
-  const title = n?"Edit Organization":"Add New Organization";
-  const v = n || { name:"",type:"NGO",city:"",state:"Maharashtra",desc:"",address:"",lat:"",lng:"",phone:"",email:"",website:"",since:"",accent:"#5BAF73",beneficiaries:"",status:"approved",bank:{accName:"",accNum:"",ifsc:"",bankName:"",branch:"",accType:"Savings",short:""},upi:{id:"",name:""},portal:"",tags:[] };
-
-  $("modalBox").innerHTML=`
-  <div style="padding:1.8rem 2rem;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:#FDFAF4;">${title}</div>
-    <button onclick="closeModal()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(253,250,244,0.5);width:32px;height:32px;border-radius:6px;font-size:1rem;">✕</button>
-  </div>
-  <div style="padding:1.8rem 2rem;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
-      ${fld("ngoName","Organization Name",v.name)}
-      ${fld("ngoType","Type","",v.type,["NGO","Orphanage","Trust"],true)}
-      ${fld("ngoCity","City",v.city)}
-      ${fld("ngoState","State",v.state)}
-      ${fld("ngoPhone","Phone",v.phone)}
-      ${fld("ngoEmail","Email",v.email)}
-      ${fld("ngoWebsite","Website",v.website)}
-      ${fld("ngoSince","Est. Year",v.since)}
-      ${fld("ngoBeneficiaries","Beneficiaries",v.beneficiaries)}
-      ${fld("ngoStatus","Status","",v.status,["approved","pending"],true)}
-    </div>
-    ${fld("ngoAddress","Full Address",v.address,"","","","full")}
-    ${fld("ngoDesc","Description / Mission",v.desc,"","","","full","textarea")}
-
-
-    <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#FDFAF4;margin:1.2rem 0 0.8rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.07);">📸 Logo &amp; Photos</div>
-    <div style="display:grid;grid-template-columns:auto 1fr;gap:1.2rem;align-items:start;margin-bottom:1rem;">
-      <div>
-        <label style="font-size:0.67rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.4rem;">Logo</label>
-        <div id="adminLogoDrop" onclick="document.getElementById('adminLogoInput').click()" style="width:80px;height:80px;border-radius:50%;border:2px dashed rgba(91,175,115,0.4);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background:#162A1D;position:relative;transition:all 0.2s;" onmouseover="this.style.borderColor='#5BAF73'" onmouseout="this.style.borderColor='rgba(91,175,115,0.4)'">
-          <input type="file" id="adminLogoInput" accept="image/*" style="display:none" onchange="adminHandleLogo(event)"/>
-          <img id="adminLogoPreview" src="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
-          <div id="adminLogoPlaceholder" style="text-align:center;pointer-events:none;"><div style="font-size:1.4rem;">🏛</div><div style="font-size:0.55rem;color:rgba(253,250,244,0.4);margin-top:0.2rem;">Logo</div></div>
-        </div>
-        <div id="adminLogoRemove" style="display:none;text-align:center;margin-top:0.3rem;"><button onclick="adminRemoveLogo()" style="font-size:0.65rem;background:none;border:none;color:#C4613A;cursor:pointer;">Remove</button></div>
-      </div>
-      <div>
-        <label style="font-size:0.67rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.4rem;">Photos (up to 5)</label>
-        <div id="adminPhotoZone" onclick="document.getElementById('adminPhotoInput').click()" style="border:2px dashed rgba(255,255,255,0.1);border-radius:8px;padding:1rem;text-align:center;cursor:pointer;background:rgba(255,255,255,0.02);transition:all 0.2s;position:relative;" onmouseover="this.style.borderColor='#5BAF73'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'">
-          <input type="file" id="adminPhotoInput" accept="image/*" multiple style="display:none" onchange="adminHandlePhotos(event)"/>
-          <div style="font-size:1.2rem;margin-bottom:0.2rem;">📸</div>
-          <div style="font-size:0.76rem;color:rgba(253,250,244,0.4);">Click to add photos</div>
-        </div>
-        <div id="adminPhotoGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:0.4rem;margin-top:0.5rem;"></div>
-        <div id="adminPhotoCount" style="font-size:0.65rem;color:rgba(253,250,244,0.3);margin-top:0.3rem;">0 / 5 photos</div>
-      </div>
-    </div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#FDFAF4;margin:1.2rem 0 0.8rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.07);">🏦 Bank Details</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
-      ${fld("bankAccName","Account Name",v.bank.accName)}
-      ${fld("bankAccNum","Account Number",v.bank.accNum)}
-      ${fld("bankIFSC","IFSC Code",v.bank.ifsc)}
-      ${fld("bankName","Bank Name",v.bank.bankName)}
-      ${fld("bankBranch","Branch",v.bank.branch)}
-      ${fld("bankAccType","Account Type","",v.bank.accType,["Savings","Current"],true)}
-    </div>
-
-    <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#FDFAF4;margin:0.5rem 0 0.8rem;">📱 UPI Details</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
-      ${fld("upiId","UPI ID",v.upi.id)}
-      ${fld("upiName","UPI Name",v.upi.name)}
-    </div>
-
-    <div style="display:flex;gap:0.8rem;justify-content:flex-end;">
-      <button onclick="closeModal()" style="padding:0.65rem 1.5rem;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:rgba(253,250,244,0.6);font-size:0.88rem;">Cancel</button>
-      <button onclick="saveNGO(${id||"null"})" style="padding:0.65rem 1.8rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.88rem;font-weight:600;box-shadow:0 4px 16px rgba(91,175,115,0.3);">${n?"Save Changes":"Add Organization"}</button>
-    </div>
-  </div>`;
-  showModal();
+function approveNgo(id){
+  var n=NGOS.find(function(x){return x.id===id;});
+  if(n){ n.status="approved"; updateStats(); switchTab(activeTab); toast(n.name+" approved"); }
+}
+function rejectNgo(id){
+  var n=NGOS.find(function(x){return x.id===id;});
+  if(n&&confirm('Reject and delete "'+n.name+'"?')){ NGOS.splice(NGOS.indexOf(n),1); updateStats(); switchTab(activeTab); toast("Submission rejected"); }
+}
+function deleteNgo(id){
+  var n=NGOS.find(function(x){return x.id===id;});
+  if(n&&confirm('Delete "'+n.name+'"? This also removes its events.')){ NGOS.splice(NGOS.indexOf(n),1); for(var i=EVENTS.length-1;i>=0;i--){if(EVENTS[i].ngoId===id)EVENTS.splice(i,1);} updateStats(); switchTab(activeTab); toast(n.name+" deleted"); }
+}
+function deleteEv(id){
+  var e=EVENTS.find(function(x){return x.id===id;});
+  if(e&&confirm('Delete event "'+e.title+'"?')){ EVENTS.splice(EVENTS.indexOf(e),1); updateStats(); renderEvTable(); toast("Event deleted"); }
 }
 
-function fld(id,label,val,selVal,options,isSelect,span,type){
-  const lblStyle="font-size:0.67rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.35rem;";
-  const inputStyle="width:100%;padding:0.65rem 0.9rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.86rem;transition:border-color 0.2s;";
-  const wrap = span==="full"?"grid-column:1/-1":"";
-  if(isSelect && options){
-    return `<div style="${wrap}"><label style="${lblStyle}">${label}</label><select id="${id}" style="${inputStyle}cursor:pointer;">${options.map(o=>`<option value="${o}" ${selVal===o?"selected":""} style="background:#0D1F14;">${o}</option>`).join("")}</select></div>`;
-  }
-  if(type==="textarea"){
-    return `<div style="${wrap}"><label style="${lblStyle}">${label}</label><textarea id="${id}" rows="3" style="${inputStyle}resize:vertical;" onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'">${escH(val)}</textarea></div>`;
-  }
-  return `<div style="${wrap}"><label style="${lblStyle}">${label}</label><input id="${id}" value="${escH(val)}" style="${inputStyle}" onfocus="this.style.borderColor='#5BAF73'" onblur="this.style.borderColor='rgba(255,255,255,0.07)'"/></div>`;
+// ── NGO FORM ──
+function makeField(id,label,val,full){
+  var d=document.createElement("div"); d.className="fg"+(full?" full":"");
+  var l=document.createElement("label"); l.className="fl"; l.textContent=label;
+  var i=document.createElement("input"); i.className="fi"; i.id=id; i.value=val||"";
+  d.appendChild(l); d.appendChild(i); return d;
+}
+function makeSelect(id,label,opts,cur,full){
+  var d=document.createElement("div"); d.className="fg"+(full?" full":"");
+  var l=document.createElement("label"); l.className="fl"; l.textContent=label;
+  var s=document.createElement("select"); s.className="fi"; s.id=id;
+  opts.forEach(function(o){ var op=document.createElement("option"); op.value=o; op.textContent=o; op.style.background="#0D1F14"; if(o===cur)op.selected=true; s.appendChild(op); });
+  d.appendChild(l); d.appendChild(s); return d;
+}
+function makeTextarea(id,label,val){
+  var d=document.createElement("div"); d.className="fg full";
+  var l=document.createElement("label"); l.className="fl"; l.textContent=label;
+  var t=document.createElement("textarea"); t.className="fi"; t.id=id; t.rows=3; t.value=val||"";
+  d.appendChild(l); d.appendChild(t); return d;
+}
+function makeSectionTitle(text){
+  var d=document.createElement("div");
+  d.style.cssText="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#FDFAF4;margin:1rem 0 0.7rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.07);";
+  d.textContent=text; return d;
 }
 
-function saveNGO(id){
-  const name=$("ngoName").value.trim();
-  if(!name){ showToast("Organization name is required","error"); return; }
-  if(!$("ngoEmail").value.trim()){ showToast("Email is required","error"); return; }
+function openNgoForm(id){
+  editNgoId=id; modalLogo=null; modalPhotos=[];
+  var n=id?NGOS.find(function(x){return x.id===id;}):null;
+  if(n&&n.logo) modalLogo=n.logo;
+  if(n&&n.photos) modalPhotos=n.photos.slice();
+  var v=n||{name:"",type:"NGO",city:"",state:"",desc:"",address:"",phone:"",email:"",website:"",since:"",beneficiaries:"",status:"approved",bank:{accName:"",accNum:"",ifsc:"",bankName:"",branch:"",accType:"Savings"},upi:{id:"",name:""},portal:""};
+  ge("modalTitle").textContent=n?"Edit Organization":"Add New Organization";
 
-  const data = {
-    name, type:$("ngoType").value, city:$("ngoCity").value.trim(), state:$("ngoState").value.trim(),
-    desc:$("ngoDesc").value.trim(), address:$("ngoAddress").value.trim(),
-    phone:$("ngoPhone").value.trim(), email:$("ngoEmail").value.trim(),
-    website:$("ngoWebsite").value.trim(), since:$("ngoSince").value.trim(),
-    beneficiaries:$("ngoBeneficiaries").value.trim(), status:$("ngoStatus").value,
-    accent:"#5BAF73", lat:0, lng:0, portal:"",
-    tags:[data&&data.tags||[]],
-    bank:{ accName:$("bankAccName").value.trim(), accNum:$("bankAccNum").value.trim(), ifsc:$("bankIFSC").value.trim(), bankName:$("bankName").value.trim(), branch:$("bankBranch").value.trim(), accType:$("bankAccType").value, short:$("bankName").value.trim().substring(0,4).toUpperCase() },
-    upi:{ id:$("upiId").value.trim(), name:$("upiName").value.trim() }
-  };
-  const ACCENTS=["#5BAF73","#D4A043","#7BC67A","#4ABFBF","#A86FD4","#A8C44A","#C4613A"];
-  if(id){
-    const idx=STORE.ngos.findIndex(x=>x.id===id);
-    data.id=id; data.tags=STORE.ngos[idx].tags||[];
-    data.accent=STORE.ngos[idx].accent;
-    STORE.ngos[idx]={...STORE.ngos[idx],...data};
-    showToast(`${name} updated`);
+  var body=ge("modalBody"); body.innerHTML="";
+
+  // Logo+Photos section
+  var mediaDiv=document.createElement("div"); mediaDiv.className="fg";
+  var mediaLbl=document.createElement("label"); mediaLbl.className="fl"; mediaLbl.textContent="Logo & Photos";
+  var mediaRow=document.createElement("div"); mediaRow.style.cssText="display:flex;gap:1.2rem;align-items:flex-start;flex-wrap:wrap;";
+
+  // Logo drop
+  var logoCont=document.createElement("div");
+  var logoDrop=document.createElement("div"); logoDrop.className="logo-drop"; logoDrop.style.cssText="width:72px;height:72px;border-radius:50%;border:2px dashed rgba(91,175,115,0.4);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background:#162A1D;transition:all 0.2s;";
+  var logoIn=document.createElement("input"); logoIn.type="file"; logoIn.accept="image/*"; logoIn.style.display="none"; logoIn.id="mLogoIn";
+  var logoImg=document.createElement("img"); logoImg.id="mLogoImg"; logoImg.style.cssText="display:"+(modalLogo?"block":"none")+";width:100%;height:100%;object-fit:cover;border-radius:50%;"; if(modalLogo)logoImg.src=modalLogo;
+  var logoPlc=document.createElement("div"); logoPlc.id="mLogoPlc"; logoPlc.style.cssText="display:"+(modalLogo?"none":"flex")+";flex-direction:column;align-items:center;pointer-events:none;"; logoPlc.innerHTML='<span style="font-size:1.3rem;">&#127963;</span><span style="font-size:0.52rem;color:rgba(253,250,244,0.4);margin-top:0.2rem;">Logo</span>';
+  logoDrop.appendChild(logoIn); logoDrop.appendChild(logoImg); logoDrop.appendChild(logoPlc);
+  logoDrop.addEventListener("click",function(){ logoIn.click(); });
+  logoIn.addEventListener("change", handleModalLogo);
+  var logoRemBtn=document.createElement("button"); logoRemBtn.id="mLogoRem"; logoRemBtn.textContent="Remove"; logoRemBtn.style.cssText="display:"+(modalLogo?"block":"none")+";margin:0.3rem auto 0;font-size:0.62rem;background:none;border:none;color:#C4613A;cursor:pointer;";
+  logoRemBtn.addEventListener("click", removeModalLogo);
+  logoCont.appendChild(logoDrop); logoCont.appendChild(logoRemBtn);
+
+  // Photo zone
+  var photoCont=document.createElement("div"); photoCont.style.cssText="flex:1;min-width:200px;";
+  var photoZone=document.createElement("div"); photoZone.className="upload-zone";
+  var photoIn=document.createElement("input"); photoIn.type="file"; photoIn.accept="image/*"; photoIn.multiple=true; photoIn.style.display="none"; photoIn.id="mPhotoIn";
+  var phIcon=document.createElement("div"); phIcon.style.pointerEvents="none"; phIcon.innerHTML='<div style="font-size:1.2rem;margin-bottom:0.2rem;">&#128248;</div><div style="font-size:0.78rem;color:rgba(253,250,244,0.45);">Click to add photos (up to 5)</div>';
+  photoZone.appendChild(photoIn); photoZone.appendChild(phIcon);
+  photoZone.addEventListener("click",function(){ photoIn.click(); });
+  photoIn.addEventListener("change", handleModalPhotos);
+  var photoGrid=document.createElement("div"); photoGrid.className="img-grid"; photoGrid.id="mPhotoGrid";
+  var photoCnt=document.createElement("div"); photoCnt.id="mPhotoCnt"; photoCnt.style.cssText="font-size:0.64rem;color:rgba(253,250,244,0.3);margin-top:0.3rem;"; photoCnt.textContent=modalPhotos.length+" / 5 photos";
+  photoCont.appendChild(photoZone); photoCont.appendChild(photoGrid); photoCont.appendChild(photoCnt);
+  mediaRow.appendChild(logoCont); mediaRow.appendChild(photoCont);
+  mediaDiv.appendChild(mediaLbl); mediaDiv.appendChild(mediaRow); body.appendChild(mediaDiv);
+  renderModalPhotos();
+
+  // Basic info grid
+  var g2a=document.createElement("div"); g2a.className="g2";
+  g2a.appendChild(makeField("fName","Organization Name *",v.name,true));
+  g2a.appendChild(makeSelect("fType","Type",["NGO","Orphanage","Trust","Society","Foundation"],v.type));
+  g2a.appendChild(makeSelect("fStatus","Status",["approved","pending"],v.status));
+  g2a.appendChild(makeField("fCity","City",v.city));
+  g2a.appendChild(makeField("fState","State",v.state));
+  g2a.appendChild(makeField("fPhone","Phone",v.phone));
+  g2a.appendChild(makeField("fEmail","Email *",v.email));
+  g2a.appendChild(makeField("fWebsite","Website",v.website));
+  g2a.appendChild(makeField("fSince","Est. Year",v.since));
+  g2a.appendChild(makeField("fBen","Beneficiaries",v.beneficiaries));
+  g2a.appendChild(makeTextarea("fDesc","Description *",v.desc));
+  g2a.appendChild(makeField("fAddr","Full Address",v.address,true));
+  body.appendChild(g2a);
+
+  // Bank
+  body.appendChild(makeSectionTitle("Bank Details"));
+  var g2b=document.createElement("div"); g2b.className="g2";
+  g2b.appendChild(makeField("fAccName","Account Name",v.bank.accName));
+  g2b.appendChild(makeField("fAccNum","Account Number",v.bank.accNum));
+  g2b.appendChild(makeField("fIFSC","IFSC Code",v.bank.ifsc));
+  g2b.appendChild(makeField("fBankName","Bank Name",v.bank.bankName));
+  g2b.appendChild(makeField("fBranch","Branch",v.bank.branch));
+  g2b.appendChild(makeSelect("fAccType","Account Type",["Savings","Current"],v.bank.accType));
+  body.appendChild(g2b);
+
+  // UPI
+  body.appendChild(makeSectionTitle("UPI & Portal"));
+  var g2c=document.createElement("div"); g2c.className="g2";
+  g2c.appendChild(makeField("fUpiId","UPI ID",v.upi.id));
+  g2c.appendChild(makeField("fUpiName","UPI Display Name",v.upi.name));
+  g2c.appendChild(makeField("fPortal","Donation Portal URL",v.portal,true));
+  body.appendChild(g2c);
+
+  // Footer
+  var footer=document.createElement("div"); footer.style.cssText="display:flex;gap:0.7rem;justify-content:flex-end;margin-top:1.2rem;";
+  var cancelBtn=document.createElement("button"); cancelBtn.style.cssText="background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:rgba(253,250,244,0.6);font-size:0.86rem;padding:0.62rem 1.4rem;cursor:pointer;"; cancelBtn.textContent="Cancel"; cancelBtn.addEventListener("click",closeModal);
+  var saveBtn=document.createElement("button"); saveBtn.className="btn-primary"; saveBtn.style.cssText="padding:0.62rem 1.7rem;font-size:0.86rem;"; saveBtn.textContent=n?"Save Changes":"Add Organization"; saveBtn.addEventListener("click",saveNgo);
+  footer.appendChild(cancelBtn); footer.appendChild(saveBtn); body.appendChild(footer);
+
+  openModal();
+}
+
+function saveNgo(){
+  var name=gv("fName"),email=gv("fEmail"),desc=gv("fDesc");
+  if(!name){toast("Organization name is required","error");return;}
+  if(!email){toast("Email is required","error");return;}
+  if(!desc){toast("Description is required","error");return;}
+  var ACCENTS=["#5BAF73","#D4A043","#7BC67A","#4ABFBF","#A86FD4","#A8C44A","#C4613A"];
+  var data={name:name,email:email,desc:desc,type:gv("fType"),status:gv("fStatus"),city:gv("fCity"),state:gv("fState"),phone:gv("fPhone"),website:gv("fWebsite"),since:gv("fSince"),beneficiaries:gv("fBen"),address:gv("fAddr"),logo:modalLogo,photos:modalPhotos.slice(),bank:{accName:gv("fAccName"),accNum:gv("fAccNum"),ifsc:gv("fIFSC"),bankName:gv("fBankName"),branch:gv("fBranch"),accType:gv("fAccType")},upi:{id:gv("fUpiId"),name:gv("fUpiName")},portal:gv("fPortal")};
+  if(editNgoId){
+    var idx=NGOS.findIndex(function(x){return x.id===editNgoId;});
+    if(idx>-1){data.id=editNgoId;data.accent=NGOS[idx].accent;data.tags=NGOS[idx].tags||[];NGOS[idx]=Object.assign({},NGOS[idx],data);toast(name+" updated");}
   } else {
-    data.id=STORE.nextId++; data.tags=[]; data.accent=ACCENTS[data.id%ACCENTS.length];
-    STORE.ngos.push(data); showToast(`${name} added successfully`);
+    data.id=nextNgoId++;data.accent=ACCENTS[data.id%ACCENTS.length];data.tags=[];NGOS.push(data);toast(name+" added");
   }
-  closeModal(); render(); renderNGOTab();
+  closeModal(); updateStats(); switchTab("ngos");
 }
 
-// ── EVENT FORM MODAL ──
-function openEventForm(id){
-  const ev = id ? STORE.events.find(x=>x.id===id) : null;
-  const v = ev || { title:"", desc:"", date:"", location:"", ngoId:STORE.ngos[0]?.id||1, status:"active" };
-  $("modalBox").innerHTML=`
-  <div style="padding:1.8rem 2rem;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center;">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:#FDFAF4;">${ev?"Edit Event":"Add New Event"}</div>
-    <button onclick="closeModal()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(253,250,244,0.5);width:32px;height:32px;border-radius:6px;font-size:1rem;">✕</button>
-  </div>
-  <div style="padding:1.8rem 2rem;">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
-      ${fld("evTitle","Event Title",v.title,"","","","full")}
-      <div><label style="font-size:0.67rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(253,250,244,0.4);font-weight:600;display:block;margin-bottom:0.35rem;">Organization</label>
-        <select id="evNgo" style="width:100%;padding:0.65rem 0.9rem;background:#162A1D;border:1.5px solid rgba(255,255,255,0.07);border-radius:6px;color:#FDFAF4;font-size:0.86rem;cursor:pointer;">
-          ${STORE.ngos.map(n=>`<option value="${n.id}" ${v.ngoId===n.id?"selected":""} style="background:#0D1F14;">${escH(n.name)}</option>`).join("")}
-        </select></div>
-      ${fld("evDate","Event Date",v.date)}
-      ${fld("evLocation","Location",v.location,"","","","full")}
-    </div>
-    ${fld("evDesc","Description",v.desc,"","","","full","textarea")}
-    <div style="display:flex;gap:0.8rem;justify-content:flex-end;margin-top:1.2rem;">
-      <button onclick="closeModal()" style="padding:0.65rem 1.5rem;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:rgba(253,250,244,0.6);font-size:0.88rem;">Cancel</button>
-      <button onclick="saveEvent(${id||"null"})" style="padding:0.65rem 1.8rem;background:linear-gradient(135deg,#5BAF73,#3A8A4E);color:#fff;border:none;border-radius:6px;font-size:0.88rem;font-weight:600;">${ev?"Save Changes":"Add Event"}</button>
-    </div>
-  </div>`;
-  showModal();
+// ── EVENT FORM ──
+function openEvForm(id){
+  editEvId=id;
+  var ev=id?EVENTS.find(function(x){return x.id===id;}):null;
+  var v=ev||{title:"",desc:"",date:"",location:"",ngoId:NGOS[0]?NGOS[0].id:1};
+  ge("modalTitle").textContent=ev?"Edit Event":"Add New Event";
+  var body=ge("modalBody"); body.innerHTML="";
+  var g2=document.createElement("div"); g2.className="g2";
+
+  g2.appendChild(makeField("evTitle","Event Title *",v.title,true));
+
+  var ngoFg=document.createElement("div"); ngoFg.className="fg";
+  var ngoLbl=document.createElement("label"); ngoLbl.className="fl"; ngoLbl.textContent="Organization";
+  var ngoSel=document.createElement("select"); ngoSel.className="fi"; ngoSel.id="evNgo";
+  NGOS.forEach(function(n){ var o=document.createElement("option"); o.value=n.id; o.textContent=n.name; o.style.background="#0D1F14"; if(n.id===v.ngoId)o.selected=true; ngoSel.appendChild(o); });
+  ngoFg.appendChild(ngoLbl); ngoFg.appendChild(ngoSel); g2.appendChild(ngoFg);
+
+  g2.appendChild(makeField("evDate","Event Date",v.date));
+  ge("evDate") && (document.getElementById("evDate") ? document.getElementById("evDate").type="date" : null);
+  g2.appendChild(makeField("evLoc","Location",v.location,true));
+  g2.appendChild(makeTextarea("evDesc","Description",v.desc));
+  body.appendChild(g2);
+
+  // Fix date input type after DOM insert
+  setTimeout(function(){ var d=ge("evDate"); if(d) d.type="date"; },10);
+
+  var footer=document.createElement("div"); footer.style.cssText="display:flex;gap:0.7rem;justify-content:flex-end;margin-top:1.2rem;";
+  var cb=document.createElement("button"); cb.style.cssText="background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:rgba(253,250,244,0.6);font-size:0.86rem;padding:0.62rem 1.4rem;cursor:pointer;"; cb.textContent="Cancel"; cb.addEventListener("click",closeModal);
+  var sb=document.createElement("button"); sb.className="btn-primary"; sb.style.cssText="padding:0.62rem 1.7rem;font-size:0.86rem;"; sb.textContent=ev?"Save Changes":"Add Event"; sb.addEventListener("click",saveEv);
+  footer.appendChild(cb); footer.appendChild(sb); body.appendChild(footer);
+  openModal();
 }
 
-function saveEvent(id){
-  const title=$("evTitle").value.trim();
-  if(!title){ showToast("Event title is required","error"); return; }
-  const data={ title, desc:$("evDesc").value.trim(), date:$("evDate").value, location:$("evLocation").value.trim(), ngoId:parseInt($("evNgo").value), status:"active" };
-  if(id){ const idx=STORE.events.findIndex(x=>x.id===id); data.id=id; STORE.events[idx]={...STORE.events[idx],...data}; showToast("Event updated"); }
-  else { data.id=STORE.nextEventId++; STORE.events.push(data); showToast("Event added"); }
-  closeModal(); renderEventsTab();
+function saveEv(){
+  var title=gv("evTitle");
+  if(!title){toast("Event title is required","error");return;}
+  var evNgoEl=ge("evNgo");
+  var data={title:title,desc:gv("evDesc"),date:gv("evDate"),location:gv("evLoc"),ngoId:evNgoEl?parseInt(evNgoEl.value)||1:1};
+  if(editEvId){
+    var idx=EVENTS.findIndex(function(x){return x.id===editEvId;});
+    if(idx>-1){data.id=editEvId;EVENTS[idx]=Object.assign({},EVENTS[idx],data);toast("Event updated");}
+  } else {
+    data.id=nextEvId++;EVENTS.push(data);toast("Event added");
+  }
+  closeModal(); updateStats(); renderEvTable();
 }
 
-function showModal(){ const b=$("modalBackdrop"); b.style.display="flex"; setTimeout(()=>b.style.animation="fadeIn 0.2s ease",10); }
-function closeModal(){ $("modalBackdrop").style.display="none"; }
-
-
-// ── ADMIN PHOTO/LOGO UPLOAD ──
-let adminLogoDataUrl = null;
-let adminPhotos = [];
-
-function adminHandleLogo(e){
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    adminLogoDataUrl = ev.target.result;
-    document.getElementById('adminLogoPreview').src = adminLogoDataUrl;
-    document.getElementById('adminLogoPreview').style.display = 'block';
-    document.getElementById('adminLogoPlaceholder').style.display = 'none';
-    document.getElementById('adminLogoRemove').style.display = 'block';
+// ── MODAL PHOTO/LOGO ──
+function handleModalLogo(e){
+  var file=e.target.files[0]; if(!file)return;
+  if(file.size>2097152){toast("Logo must be under 2MB","error");return;}
+  var r=new FileReader();
+  r.onload=function(ev){
+    modalLogo=ev.target.result;
+    var i=ge("mLogoImg"); if(i){i.src=modalLogo;i.style.display="block";}
+    var p=ge("mLogoPlc"); if(p)p.style.display="none";
+    var rb=ge("mLogoRem"); if(rb)rb.style.display="block";
   };
-  reader.readAsDataURL(file);
+  r.readAsDataURL(file);
 }
-
-function adminRemoveLogo(){
-  adminLogoDataUrl = null;
-  document.getElementById('adminLogoPreview').style.display = 'none';
-  document.getElementById('adminLogoPlaceholder').style.display = 'block';
-  document.getElementById('adminLogoRemove').style.display = 'none';
+function removeModalLogo(){
+  modalLogo=null;
+  var i=ge("mLogoImg"); if(i){i.style.display="none";i.src="";}
+  var p=ge("mLogoPlc"); if(p)p.style.display="flex";
+  var rb=ge("mLogoRem"); if(rb)rb.style.display="none";
+  var inp=ge("mLogoIn"); if(inp)inp.value="";
 }
-
-function adminHandlePhotos(e){
-  const files = Array.from(e.target.files);
-  const remaining = 5 - adminPhotos.length;
-  files.slice(0, remaining).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      adminPhotos.push({ dataUrl: ev.target.result, name: file.name });
-      adminRenderPhotos();
-    };
-    reader.readAsDataURL(file);
+function handleModalPhotos(e){
+  var files=Array.from(e.target.files), rem=5-modalPhotos.length;
+  if(files.length>rem)toast("Only "+rem+" more photo(s) can be added","error");
+  files.slice(0,rem).forEach(function(f){
+    if(f.size>5242880){toast(f.name+" exceeds 5MB","error");return;}
+    var r=new FileReader(); r.onload=function(ev){modalPhotos.push({dataUrl:ev.target.result,name:f.name});renderModalPhotos();}; r.readAsDataURL(f);
   });
-  document.getElementById('adminPhotoInput').value = '';
+  var inp=ge("mPhotoIn"); if(inp)inp.value="";
+}
+function removeModalPhoto(i){ modalPhotos.splice(i,1); renderModalPhotos(); }
+function renderModalPhotos(){
+  var g=ge("mPhotoGrid"),c=ge("mPhotoCnt"); if(!g)return;
+  if(c)c.textContent=modalPhotos.length+" / 5 photos";
+  g.innerHTML="";
+  modalPhotos.forEach(function(p,i){
+    var thumb=document.createElement("div"); thumb.className="img-thumb";
+    var img=document.createElement("img"); img.src=p.dataUrl;
+    var btn=document.createElement("button"); btn.style.cssText="position:absolute;top:2px;right:2px;background:rgba(196,97,58,0.88);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:0.58rem;cursor:pointer;display:flex;align-items:center;justify-content:center;"; btn.innerHTML="&#10005;";
+    (function(idx){ btn.addEventListener("click",function(){ removeModalPhoto(idx); }); })(i);
+    thumb.appendChild(img); thumb.appendChild(btn); g.appendChild(thumb);
+  });
 }
 
-function adminRemovePhoto(idx){
-  adminPhotos.splice(idx, 1);
-  adminRenderPhotos();
-}
+// ── MODAL ──
+function openModal(){ ge("modalBg").classList.add("open"); }
+function closeModal(){ ge("modalBg").classList.remove("open"); ge("modalBody").innerHTML=""; modalLogo=null; modalPhotos=[]; }
 
-function adminRenderPhotos(){
-  const grid = document.getElementById('adminPhotoGrid');
-  const cnt = document.getElementById('adminPhotoCount');
-  if(!grid || !cnt) return;
-  cnt.textContent = adminPhotos.length + ' / 5 photos';
-  grid.innerHTML = adminPhotos.map((p,i) => `
-    <div style="position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;background:#111F17;border:1px solid rgba(255,255,255,0.07);">
-      <img src="${p.dataUrl}" style="width:100%;height:100%;object-fit:cover;display:block;" alt="Photo ${i+1}"/>
-      <button onclick="adminRemovePhoto(${i})" style="position:absolute;top:2px;right:2px;background:rgba(196,97,58,0.85);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:0.6rem;cursor:pointer;">✕</button>
-    </div>`).join('');
-}
-
-// Reset photo state when opening modal
-const _origOpenNGO = openNGOForm;
-
-// ── INIT ──
-render();
+// ── BOOT ──
+ge("loginPass").focus();
 </script>
 </body>
 </html>
