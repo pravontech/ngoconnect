@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SevaSangam — Connect. Care. Change.</title>
+<meta name="description" content="Discover verified NGOs, orphanages and trusts across India. Donate via bank transfer, UPI or QR code."/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<style>
+  body { margin: 0; background: #0D1F14; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+const { useState, useEffect, useRef, useCallback } = React;
+
+
+// ─── GOOGLE FONTS ───
+const FontLink = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0D1F14; }
+    ::-webkit-scrollbar-thumb { background: #3A7D50; border-radius: 2px; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50% { transform: translateY(-14px) rotate(-2deg); }
+    }
+    @keyframes float2 {
+      0%, 100% { transform: translateY(0px) rotate(3deg); }
+      50% { transform: translateY(-9px) rotate(3deg); }
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .anim-fade-up   { animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) both; }
+    .anim-fade-up-1 { animation: fadeUp 0.7s 0.1s cubic-bezier(0.22,1,0.36,1) both; }
+    .anim-fade-up-2 { animation: fadeUp 0.7s 0.2s cubic-bezier(0.22,1,0.36,1) both; }
+    .anim-fade-up-3 { animation: fadeUp 0.7s 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+    .anim-fade-up-4 { animation: fadeUp 0.7s 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+    .float-card-1   { animation: float 6s ease-in-out infinite; }
+    .float-card-2   { animation: float2 5s 1s ease-in-out infinite; }
+    .marquee-track  { animation: marquee 30s linear infinite; display: flex; }
+    input:focus, select:focus { outline: none; }
+    button { cursor: pointer; font-family: 'Outfit', sans-serif; }
+    a { text-decoration: none; }
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr !important; }
+      .hero-right-col { display: none !important; }
+      .info-grid { grid-template-columns: 1fr !important; }
+      .how-grid { grid-template-columns: 1fr 1fr !important; }
+      .footer-grid { grid-template-columns: 1fr 1fr !important; }
+      .search-grid { grid-template-columns: 1fr !important; }
+      .other-grid { grid-template-columns: 1fr !important; }
+      .nav-links-desk { display: none !important; }
+    }
+  `}</style>
+);
+
+// ─── THEME ───
+const T = {
+  bg:          "#0D1F14",
+  bgCard:      "#111F17",
+  bgLight:     "#162A1D",
+  border:      "rgba(255,255,255,0.07)",
+  sage:        "#5BAF73",
+  mint:        "#A8DFBA",
+  gold:        "#D4A043",
+  amber:       "#F0B84A",
+  rust:        "#C4613A",
+  cream:       "#F5F0E8",
+  white:       "#FDFAF4",
+  muted:       "rgba(253,250,244,0.42)",
+};
+
+// ─── DATA ───
+const NGOS = [
+  {
+    id:1, name:"Asha Ki Kiran Trust", type:"NGO", city:"Pune", state:"Maharashtra",
+    desc:"Empowering underprivileged women and children through education, skill training, and healthcare access since 2009.",
+    address:"14, Deccan Gymkhana, Near Gokhale Institute, Pune – 411004",
+    lat:18.5204, lng:73.8567,
+    phone:"+91 98765 43210", email:"info@ashakiran.org", website:"www.ashakiran.org",
+    since:"2009", events:3, accent:"#5BAF73", beneficiaries:"12,400+",
+    bank:{ accName:"Asha Ki Kiran Trust", accNum:"30987654321", ifsc:"SBIN0012345", bankName:"State Bank of India", branch:"Deccan Gymkhana, Pune", accType:"Savings", short:"SBI" },
+    upi:{ id:"ashakiran@sbi", name:"Asha Ki Kiran Trust" },
+    portal:"https://ashakiran.org/donate",
+    tags:["Women Empowerment","Education","Healthcare"],
+  },
+  {
+    id:2, name:"Shri Balak Ashram", type:"Orphanage", city:"Nashik", state:"Maharashtra",
+    desc:"Providing shelter, education, and nutrition to 200+ orphaned and destitute children with a focus on holistic development.",
+    address:"Survey No. 45, Panchavati Colony, Nashik – 422003",
+    lat:20.0059, lng:73.7898,
+    phone:"+91 97654 32109", email:"shribalak@gmail.com", website:"www.shribalakashram.org",
+    since:"1998", events:2, accent:"#D4A043", beneficiaries:"200+",
+    bank:{ accName:"Shri Balak Ashram", accNum:"12345678901234", ifsc:"PUNB0123456", bankName:"Punjab National Bank", branch:"Panchavati, Nashik", accType:"Current", short:"PNB" },
+    upi:{ id:"balakashram@pnb", name:"Shri Balak Ashram" },
+    portal:"https://shribalakashram.org/donate",
+    tags:["Children","Shelter","Nutrition"],
+  },
+  {
+    id:3, name:"Green Future Foundation", type:"Trust", city:"Mumbai", state:"Maharashtra",
+    desc:"Environmental NGO championing urban tree plantation, clean water access, and climate education for Mumbai's youth.",
+    address:"Office 301, Andheri East, Mumbai – 400069",
+    lat:19.1136, lng:72.8697,
+    phone:"+91 91234 56789", email:"hello@greenfuture.in", website:"www.greenfuture.in",
+    since:"2015", events:5, accent:"#7BC67A", beneficiaries:"85,000+",
+    bank:{ accName:"Green Future Foundation", accNum:"909876543210", ifsc:"HDFC0001234", bankName:"HDFC Bank", branch:"Andheri East, Mumbai", accType:"Current", short:"HDFC" },
+    upi:{ id:"greenfuture@hdfc", name:"Green Future Foundation" },
+    portal:"https://greenfuture.in/support",
+    tags:["Environment","Clean Water","Climate"],
+  },
+  {
+    id:4, name:"Disha Swayam Siddha", type:"NGO", city:"Nagpur", state:"Maharashtra",
+    desc:"Rural women's empowerment organization offering microfinance, livelihood training, and legal aid in Vidarbha villages.",
+    address:"Plot 22, Dharampeth, Nagpur – 440010",
+    lat:21.1458, lng:79.0882,
+    phone:"+91 88765 12345", email:"disha@swayam.net", website:"www.dishaswayam.net",
+    since:"2011", events:1, accent:"#4ABFBF", beneficiaries:"6,200+",
+    bank:{ accName:"Disha Swayam Siddha", accNum:"5678901234567", ifsc:"ICIC0001122", bankName:"ICICI Bank", branch:"Dharampeth, Nagpur", accType:"Savings", short:"ICICI" },
+    upi:{ id:"dishaswayam@icici", name:"Disha Swayam Siddha" },
+    portal:"https://dishaswayam.net/donate",
+    tags:["Microfinance","Rural Women","Legal Aid"],
+  },
+  {
+    id:5, name:"Jeevan Jyoti Society", type:"Orphanage", city:"Delhi", state:"Delhi",
+    desc:"Care home for 150 abandoned children in South Delhi, offering formal schooling, medical care, and vocational guidance.",
+    address:"B-14, Mehrauli, New Delhi – 110030",
+    lat:28.5244, lng:77.1855,
+    phone:"+91 99988 77665", email:"jeevan@jyotisociety.org", website:"www.jyotisociety.org",
+    since:"2002", events:4, accent:"#A86FD4", beneficiaries:"1,500+",
+    bank:{ accName:"Jeevan Jyoti Society", accNum:"11122233344455", ifsc:"AXIS0001234", bankName:"Axis Bank", branch:"Mehrauli, Delhi", accType:"Savings", short:"AXIS" },
+    upi:{ id:"jeevanjyoti@axl", name:"Jeevan Jyoti Society" },
+    portal:"https://jyotisociety.org/give",
+    tags:["Children","Schooling","Medical Care"],
+  },
+  {
+    id:6, name:"Krishi Seva Samiti", type:"Trust", city:"Aurangabad", state:"Maharashtra",
+    desc:"Supporting distressed farmers through crop insurance, seed banks, water harvesting projects, and suicide prevention helplines.",
+    address:"Cidco Colony, N-6, Aurangabad – 431003",
+    lat:19.8762, lng:75.3433,
+    phone:"+91 94500 11223", email:"info@krishiseva.org", website:"www.krishiseva.org",
+    since:"2007", events:2, accent:"#A8C44A", beneficiaries:"32,000+",
+    bank:{ accName:"Krishi Seva Samiti", accNum:"0987654321098", ifsc:"MAHB0001234", bankName:"Bank of Maharashtra", branch:"CIDCO, Aurangabad", accType:"Current", short:"BOM" },
+    upi:{ id:"krishiseva@bom", name:"Krishi Seva Samiti" },
+    portal:"https://krishiseva.org/donate",
+    tags:["Farmers","Water Harvesting","Helpline"],
+  },
+];
+
+const EVENTS = [
+  { title:"Winter Clothing Drive",   org:"Asha Ki Kiran Trust",    day:"20", month:"Dec", desc:"Collect and distribute warm clothing to 500+ underprivileged families in Pune.",     loc:"Deccan Gymkhana, Pune",       color:"#5BAF73" },
+  { title:"Free Medical Camp",       org:"Shri Balak Ashram",      day:"05", month:"Jan", desc:"General health check-up and dental care for children and senior citizens.",         loc:"Panchavati, Nashik",           color:"#D4A043" },
+  { title:"Tree Plantation Drive",   org:"Green Future Foundation",day:"14", month:"Jan", desc:"Plant 1,000 native trees across Aarey Colony. Corporate volunteers welcome.",       loc:"Aarey Colony, Mumbai",         color:"#7BC67A" },
+  { title:"Women's Skill Fair",      org:"Disha Swayam Siddha",    day:"22", month:"Jan", desc:"Showcase of handicrafts, self-help products, and NRLM certification stalls.",       loc:"Dharampeth, Nagpur",           color:"#4ABFBF" },
+  { title:"Annual Sports Meet",      org:"Jeevan Jyoti Society",   day:"01", month:"Feb", desc:"Inter-orphanage sports tournament. Sponsorship for prizes and refreshments welcome.",loc:"Mehrauli Sports Ground, Delhi", color:"#A86FD4" },
+  { title:"Farmer Awareness Camp",   org:"Krishi Seva Samiti",     day:"10", month:"Feb", desc:"Free soil testing, crop insurance guidance, and water harvesting workshop.",         loc:"CIDCO, Aurangabad",            color:"#A8C44A" },
+];
+
+const TICKER = ["240+ Registered NGOs","18 States Covered","₹4.2 Crore Channelled","Zero Platform Fees","100% Transparent","Direct Bank Transfers","UPI Donations","80G Tax Benefits","Verified Organizations","Real-time Impact"];
+
+// ─── UTILS ───
+function drawQR(canvas, text) {
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const S = 200; canvas.width = S; canvas.height = S;
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, S, S);
+  const cell = 6, cols = Math.floor(S/cell), rows = Math.floor(S/cell);
+  let seed = 0;
+  for (let i = 0; i < text.length; i++) seed = (seed * 31 + text.charCodeAt(i)) >>> 0;
+  const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 0xFFFFFFFF; };
+  ctx.fillStyle = "#1A3A2A";
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (rand() > 0.5) ctx.fillRect(c*cell, r*cell, cell, cell);
+  const corner = (x, y) => {
+    ctx.fillStyle="#fff";    ctx.fillRect(x,y,7*cell,7*cell);
+    ctx.fillStyle="#1A3A2A"; ctx.fillRect(x,y,7*cell,7*cell);
+    ctx.fillStyle="#fff";    ctx.fillRect(x+cell,y+cell,5*cell,5*cell);
+    ctx.fillStyle="#1A3A2A"; ctx.fillRect(x+2*cell,y+2*cell,3*cell,3*cell);
+  };
+  corner(0,0); corner((cols-7)*cell,0); corner(0,(rows-7)*cell);
+}
+
+// ─── LOGO ───
+function Logo({ small }) {
+  return (
+    <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize: small?"1.4rem":"1.9rem", fontWeight:700, letterSpacing:"-0.5px", color:T.white }}>
+      Seva<span style={{ color:T.gold }}>Sangam</span>
+    </span>
+  );
+}
+
+// ─── TAG ───
+function STag({ children, color=T.gold }) {
+  return (
+    <span style={{ display:"inline-flex", alignItems:"center", gap:"0.4rem", background:`${color}18`, border:`1px solid ${color}40`, padding:"0.28rem 0.8rem", borderRadius:"2px", fontSize:"0.68rem", fontWeight:600, letterSpacing:"2px", textTransform:"uppercase", color, fontFamily:"'Outfit',sans-serif" }}>
+      <span style={{ fontSize:"0.44rem" }}>●</span>{children}
+    </span>
+  );
+}
+
+// ─── COPY BTN ───
+function CopyBtn({ value }) {
+  const [done, setDone] = useState(false);
+  const go = () => navigator.clipboard?.writeText(value).then(() => { setDone(true); setTimeout(()=>setDone(false),1800); });
+  return (
+    <button onClick={go} style={{ background:done?"#5BAF73":"transparent", border:`1px solid ${done?"#5BAF73":T.border}`, borderRadius:"3px", padding:"0.15rem 0.5rem", fontSize:"0.67rem", color:done?"#fff":T.muted, transition:"all 0.2s", fontWeight:500 }}>
+      {done ? "✓ Copied" : "Copy"}
+    </button>
+  );
+}
+
+// ─── TOAST ───
+function Toast({ msg, show }) {
+  return (
+    <div style={{ position:"fixed", bottom:"2rem", right:"2rem", zIndex:9999, background:"#5BAF73", color:"#fff", padding:"0.8rem 1.6rem", borderRadius:"8px", fontSize:"0.88rem", fontWeight:600, boxShadow:"0 12px 40px rgba(0,0,0,0.4)", transform:show?"translateY(0)":"translateY(24px)", opacity:show?1:0, transition:"all 0.3s cubic-bezier(0.22,1,0.36,1)", pointerEvents:"none" }}>
+      ✓ {msg}
+    </div>
+  );
+}
+
+// ─── NAV ───
+function Nav({ onList }) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const h = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", h);
+    return () => window.removeEventListener("scroll", h);
+  }, []);
+  return (
+    <nav style={{ position:"fixed", top:0, left:0, right:0, zIndex:200, background:scrolled?"rgba(13,31,20,0.96)":"transparent", backdropFilter:scrolled?"blur(20px)":"none", borderBottom:scrolled?`1px solid ${T.border}`:"1px solid transparent", padding:"0 5%", height:"68px", display:"flex", alignItems:"center", justifyContent:"space-between", transition:"all 0.4s ease" }}>
+      <Logo />
+      <div className="nav-links-desk" style={{ display:"flex", gap:"2rem", alignItems:"center" }}>
+        {[["#ngos","Organizations"],["#events","Events"],["#how","How It Works"]].map(([h,l]) => (
+          <a key={h} href={h} style={{ fontSize:"0.85rem", fontWeight:500, color:T.muted, transition:"color 0.2s" }}
+            onMouseEnter={e=>e.target.style.color=T.mint} onMouseLeave={e=>e.target.style.color=T.muted}>{l}</a>
+        ))}
+        <button onClick={onList} style={{ background:`linear-gradient(135deg,${T.sage},#3A8A4E)`, color:"#fff", padding:"0.5rem 1.2rem", border:"none", borderRadius:"6px", fontSize:"0.85rem", fontWeight:600, boxShadow:`0 4px 16px ${T.sage}40`, transition:"all 0.2s" }}
+          onMouseEnter={e=>e.currentTarget.style.transform="translateY(-1px)"} onMouseLeave={e=>e.currentTarget.style.transform="translateY(0)"}>
+          List Your NGO
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+// ─── TICKER ───
+function Ticker() {
+  const items = [...TICKER,...TICKER];
+  return (
+    <div style={{ background:T.sage, overflow:"hidden", padding:"0.58rem 0", borderBottom:`1px solid #3A8A4E` }}>
+      <div className="marquee-track" style={{ whiteSpace:"nowrap" }}>
+        {items.map((t,i) => (
+          <span key={i} style={{ display:"inline-flex", alignItems:"center", gap:"1.5rem", padding:"0 2rem", fontSize:"0.74rem", fontWeight:700, letterSpacing:"1.5px", textTransform:"uppercase", color:T.bg }}>
+            <span style={{ opacity:0.45 }}>◆</span>{t}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── HERO ───
+function Hero({ onExplore }) {
+  return (
+    <section style={{ minHeight:"100vh", background:T.bg, display:"grid", gridTemplateColumns:"1fr 1fr", alignItems:"center", padding:"0 5%", paddingTop:"68px", position:"relative", overflow:"hidden", gap:"4rem" }} className="hero-grid">
+      {/* BG effects */}
+      <div style={{ position:"absolute", inset:0, pointerEvents:"none" }}>
+        <div style={{ position:"absolute", top:"15%", left:"52%", width:"520px", height:"520px", background:`radial-gradient(circle,${T.sage}16 0%,transparent 65%)`, borderRadius:"50%" }} />
+        <div style={{ position:"absolute", bottom:"5%", left:"2%", width:"280px", height:"280px", background:`radial-gradient(circle,${T.gold}0D 0%,transparent 65%)`, borderRadius:"50%" }} />
+        <svg style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0.04 }}>
+          <defs><pattern id="g" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M60 0L0 0 0 60" fill="none" stroke="#5BAF73" strokeWidth="0.5"/></pattern></defs>
+          <rect width="100%" height="100%" fill="url(#g)" />
+        </svg>
+        <div style={{ position:"absolute", bottom:"-8%", right:"-4%", fontFamily:"'Cormorant Garamond',serif", fontSize:"clamp(8rem,18vw,20rem)", fontWeight:700, color:"rgba(255,255,255,0.016)", lineHeight:1, userSelect:"none", letterSpacing:"-8px" }}>संगम</div>
+      </div>
+
+      {/* Left */}
+      <div style={{ position:"relative", zIndex:2 }}>
+        <div className="anim-fade-up" style={{ marginBottom:"1.5rem" }}><STag>India's Social Impact Platform</STag></div>
+        <h1 className="anim-fade-up-1" style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"clamp(3rem,5vw,5.5rem)", fontWeight:700, lineHeight:1.0, color:T.white, marginBottom:"1.5rem", letterSpacing:"-1px" }}>
+          Where Every<br />
+          <em style={{ color:T.amber, fontStyle:"italic" }}>Rupee</em> Finds<br />
+          Its Purpose.
+        </h1>
+        <p className="anim-fade-up-2" style={{ color:T.muted, fontSize:"1.05rem", lineHeight:1.75, maxWidth:"460px", marginBottom:"2.5rem" }}>
+          Discover verified orphanages, NGOs, and trusts across India. Donate directly via bank transfer, UPI, or QR code — 100% transparent, zero platform fees.
+        </p>
+        <div className="anim-fade-up-3" style={{ display:"flex", gap:"1rem", flexWrap:"wrap" }}>
+          <button onClick={onExplore} style={{ background:`linear-gradient(135deg,${T.sage},#3A8A4E)`, color:"#fff", padding:"0.9rem 2.2rem", border:"none", borderRadius:"6px", fontSize:"0.92rem", fontWeight:600, boxShadow:`0 8px 32px ${T.sage}45`, transition:"all 0.25s" }}
+            onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow=`0 14px 40px ${T.sage}55`; }}
+            onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow=`0 8px 32px ${T.sage}45`; }}>
+            Explore Organizations →
+          </button>
+          <a href="#how" style={{ background:"transparent", color:T.white, padding:"0.9rem 2.2rem", border:`1px solid rgba(255,255,255,0.18)`, borderRadius:"6px", fontSize:"0.92rem", fontWeight:500, transition:"all 0.25s", display:"inline-block" }}
+            onMouseEnter={e=>{ e.currentTarget.style.borderColor=T.amber; e.currentTarget.style.color=T.amber; }}
+            onMouseLeave={e=>{ e.currentTarget.style.borderColor="rgba(255,255,255,0.18)"; e.currentTarget.style.color=T.white; }}>
+            How to Donate
+          </a>
+        </div>
+        <div className="anim-fade-up-4" style={{ display:"flex", gap:"2.5rem", marginTop:"3.5rem", paddingTop:"2rem", borderTop:`1px solid ${T.border}` }}>
+          {[["240+","Registered NGOs"],["18","States Covered"],["₹4.2Cr","Funds Channelled"]].map(([n,l])=>(
+            <div key={l}>
+              <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"2.2rem", fontWeight:700, color:T.amber, lineHeight:1 }}>{n}</div>
+              <div style={{ fontSize:"0.76rem", color:T.muted, marginTop:"0.3rem", letterSpacing:"0.5px" }}>{l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right — floating cards */}
+      <div className="hero-right-col" style={{ position:"relative", zIndex:2, display:"flex", justifyContent:"center", alignItems:"center" }}>
+        <div style={{ position:"relative", width:"360px", height:"440px" }}>
+          {/* card 1 back */}
+          <div className="float-card-1" style={{ position:"absolute", width:"300px", bottom:0, left:"10px", background:`linear-gradient(135deg,${T.sage}30,#1A3A2A)`, borderRadius:"16px", padding:"1.5rem", border:`1px solid rgba(91,175,115,0.22)`, boxShadow:"0 30px 80px rgba(0,0,0,0.5)" }}>
+            <div style={{ fontSize:"0.63rem", letterSpacing:"2px", textTransform:"uppercase", color:T.mint, opacity:0.8, marginBottom:"0.5rem" }}>Featured Event</div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"1.1rem", fontWeight:700, color:"#fff" }}>Winter Clothing Drive 2025</div>
+            <div style={{ fontSize:"0.76rem", color:"rgba(255,255,255,0.42)", marginTop:"0.4rem" }}>Dec 20 · Pune, Maharashtra</div>
+            <div style={{ marginTop:"1rem", display:"flex", gap:"0.5rem" }}>
+              {["500 families","Free entry"].map(t=>(
+                <span key={t} style={{ background:"rgba(255,255,255,0.08)", padding:"0.18rem 0.5rem", borderRadius:"3px", fontSize:"0.63rem", color:"rgba(255,255,255,0.45)" }}>{t}</span>
+              ))}
+            </div>
+          </div>
+          {/* card 2 mid */}
+          <div className="float-card-2" style={{ position:"absolute", width:"300px", top:"20px", right:0, background:"#162A1D", borderRadius:"16px", padding:"1.5rem", border:`1px solid ${T.border}`, boxShadow:"0 20px 60px rgba(0,0,0,0.4)" }}>
+            <div style={{ fontSize:"0.63rem", letterSpacing:"2px", textTransform:"uppercase", color:T.sage, marginBottom:"0.5rem" }}>Orphanage · Verified ✓</div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"1.2rem", fontWeight:700, color:T.white }}>Shri Balak Ashram</div>
+            <div style={{ fontSize:"0.78rem", color:T.muted, marginTop:"0.2rem" }}>📍 Nashik, Maharashtra</div>
+            <div style={{ height:"1px", background:T.border, margin:"0.8rem 0" }} />
+            <div style={{ fontSize:"0.66rem", color:T.muted, letterSpacing:"1px", textTransform:"uppercase", marginBottom:"0.3rem" }}>Donations Received</div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:"1.5rem", fontWeight:500, color:T.gold }}>₹ 2,40,000</div>
+            <div style={{ marginTop:"0.5rem", display:"inline-block", background:`${T.sage}20`, color:T.sage, fontSize:"0.63rem", padding:"0.18rem 0.6rem", borderRadius:"3px", letterSpacing:"1px", textTransform:"uppercase" }}>80G Certified</div>
+          </div>
+          {/* card 3 front */}
+          <div style={{ position:"absolute", width:"290px", top:"50%", left:"50%", transform:"translate(-50%,-50%) rotate(-1deg)", background:"linear-gradient(135deg,#1D3528,#162A1D)", borderRadius:"16px", padding:"1.5rem", border:`1px solid ${T.sage}30`, boxShadow:`0 40px 100px rgba(0,0,0,0.6),0 0 0 1px ${T.sage}15`, zIndex:5 }}>
+            <div style={{ fontSize:"0.63rem", letterSpacing:"2px", textTransform:"uppercase", color:T.mint, marginBottom:"0.5rem" }}>NGO · Active</div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"1.2rem", fontWeight:700, color:T.white }}>Asha Ki Kiran Trust</div>
+            <div style={{ fontSize:"0.78rem", color:T.muted, marginTop:"0.2rem" }}>📍 Pune, Maharashtra</div>
+            <div style={{ height:"1px", background:T.border, margin:"0.8rem 0" }} />
+            <div style={{ fontSize:"0.66rem", color:T.muted, letterSpacing:"1px", textTransform:"uppercase", marginBottom:"0.3rem" }}>Next Event</div>
+            <div style={{ fontSize:"0.9rem", color:T.cream, fontWeight:500 }}>Free Medical Camp · Jan 5</div>
+            <div style={{ marginTop:"0.8rem", display:"flex", alignItems:"center", gap:"0.5rem" }}>
+              <div style={{ flex:1, height:"4px", background:T.border, borderRadius:"2px", overflow:"hidden" }}>
+                <div style={{ width:"68%", height:"100%", background:`linear-gradient(90deg,${T.sage},${T.mint})`, borderRadius:"2px" }} />
+              </div>
+              <span style={{ fontSize:"0.7rem", color:T.sage, fontWeight:600 }}>68% funded</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── SEARCH BAR ───
+function SearchBar({ query, setQuery, city, setCity, type, setType, onSearch, chip, setChip }) {
+  const chips = [["","All"],["Orphanage","Orphanages"],["NGO","NGOs"],["Trust","Trusts"],["Pune","Pune"],["Mumbai","Mumbai"],["Delhi","Delhi"]];
+  return (
+    <div style={{ background:T.bgCard, padding:"2.5rem 5%", borderBottom:`1px solid ${T.border}` }}>
+      <div className="search-grid" style={{ maxWidth:"900px", margin:"0 auto", display:"grid", gridTemplateColumns:"1fr auto auto auto", border:`1.5px solid ${T.border}`, borderRadius:"8px", overflow:"hidden", background:T.bgLight, boxShadow:"0 8px 40px rgba(0,0,0,0.3)" }}>
+        <input value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==="Enter"&&onSearch()}
+          placeholder="Search organizations by name or mission…"
+          style={{ padding:"1rem 1.4rem", border:"none", background:"transparent", color:T.white, fontSize:"0.9rem", fontFamily:"'Outfit',sans-serif", borderRight:`1px solid ${T.border}` }} />
+        <select value={city} onChange={e=>setCity(e.target.value)}
+          style={{ padding:"1rem", border:"none", background:T.bgLight, color:T.muted, fontSize:"0.86rem", fontFamily:"'Outfit',sans-serif", borderRight:`1px solid ${T.border}`, cursor:"pointer" }}>
+          {["","Pune","Mumbai","Nashik","Nagpur","Aurangabad","Delhi"].map(c=><option key={c} value={c} style={{ background:T.bg }}>{c||"All Cities"}</option>)}
+        </select>
+        <select value={type} onChange={e=>setType(e.target.value)}
+          style={{ padding:"1rem", border:"none", background:T.bgLight, color:T.muted, fontSize:"0.86rem", fontFamily:"'Outfit',sans-serif", borderRight:`1px solid ${T.border}`, cursor:"pointer" }}>
+          {["","Orphanage","NGO","Trust"].map(t=><option key={t} value={t} style={{ background:T.bg }}>{t||"All Types"}</option>)}
+        </select>
+        <button onClick={onSearch} style={{ padding:"1rem 2rem", background:`linear-gradient(135deg,${T.sage},#3A8A4E)`, color:"#fff", border:"none", fontSize:"0.9rem", fontWeight:600, transition:"opacity 0.2s" }}
+          onMouseEnter={e=>e.currentTarget.style.opacity="0.9"} onMouseLeave={e=>e.currentTarget.style.opacity="1"}>Search</button>
+      </div>
+      <div style={{ maxWidth:"900px", margin:"1rem auto 0", display:"flex", gap:"0.5rem", flexWrap:"wrap" }}>
+        {chips.map(([v,l])=>(
+          <button key={v} onClick={()=>setChip(v)} style={{ padding:"0.33rem 0.9rem", borderRadius:"20px", fontSize:"0.78rem", fontWeight:500, border:`1px solid ${chip===v?T.sage:T.border}`, background:chip===v?`${T.sage}22`:"transparent", color:chip===v?T.mint:T.muted, transition:"all 0.2s" }}>{l}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── NGO CARD ───
+function NGOCard({ ngo, onClick }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div onClick={()=>onClick(ngo)} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
+      style={{ background:hov?T.bgLight:T.bgCard, border:`1px solid ${hov?ngo.accent+"50":T.border}`, borderRadius:"12px", overflow:"hidden", cursor:"pointer", transform:hov?"translateY(-6px)":"translateY(0)", boxShadow:hov?`0 24px 60px rgba(0,0,0,0.4),0 0 0 1px ${ngo.accent}22`:"0 4px 20px rgba(0,0,0,0.2)", transition:"all 0.35s cubic-bezier(0.22,1,0.36,1)" }}>
+      {/* header */}
+      <div style={{ height:"130px", position:"relative", overflow:"hidden", background:`linear-gradient(135deg,${ngo.accent}22 0%,${ngo.accent}06 100%)`, borderBottom:`1px solid ${T.border}` }}>
+        <div style={{ position:"absolute", top:"-20px", right:"-20px", width:"100px", height:"100px", borderRadius:"50%", background:`${ngo.accent}0E`, border:`1px solid ${ngo.accent}18` }} />
+        <div style={{ position:"absolute", top:"10px", right:"30px", width:"50px", height:"50px", borderRadius:"50%", background:`${ngo.accent}06`, border:`1px solid ${ngo.accent}12` }} />
+        <div style={{ position:"absolute", top:"1rem", right:"1rem" }}>
+          <span style={{ background:`${ngo.accent}1E`, color:ngo.accent, fontSize:"0.63rem", letterSpacing:"1.5px", textTransform:"uppercase", padding:"0.22rem 0.6rem", borderRadius:"3px", fontWeight:600, border:`1px solid ${ngo.accent}28` }}>{ngo.type}</span>
+        </div>
+        <div style={{ position:"absolute", bottom:"1rem", left:"1rem", display:"flex", alignItems:"center", gap:"0.8rem" }}>
+          <div style={{ width:"44px", height:"44px", borderRadius:"8px", background:`${ngo.accent}1E`, border:`1px solid ${ngo.accent}38`, display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"'Cormorant Garamond',serif", fontSize:"1.3rem", fontWeight:700, color:ngo.accent }}>{ngo.name[0]}</div>
+          <div>
+            <div style={{ fontSize:"0.68rem", color:`${ngo.accent}BB`, letterSpacing:"1px", textTransform:"uppercase", fontWeight:600, marginBottom:"0.1rem" }}>Est. {ngo.since}</div>
+            <div style={{ fontSize:"0.78rem", color:T.muted }}>{ngo.city}, {ngo.state}</div>
+          </div>
+        </div>
+      </div>
+      {/* body */}
+      <div style={{ padding:"1.2rem" }}>
+        <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"1.2rem", fontWeight:700, color:T.white, marginBottom:"0.5rem" }}>{ngo.name}</div>
+        <div style={{ fontSize:"0.81rem", color:T.muted, lineHeight:1.65, marginBottom:"0.9rem", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{ngo.desc}</div>
+        <div style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap", marginBottom:"0.9rem" }}>
+          {ngo.tags.slice(0,2).map(tag=>(
+            <span key={tag} style={{ fontSize:"0.67rem", padding:"0.17rem 0.5rem", borderRadius:"3px", background:`${ngo.accent}10`, color:ngo.accent, border:`1px solid ${ngo.accent}22`, fontWeight:500 }}>{tag}</span>
+          ))}
+        </div>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", paddingTop:"0.8rem", borderTop:`1px solid ${T.border}` }}>
+          <div style={{ fontSize:"0.77rem", color:T.muted }}>
+            <span style={{ color:ngo.accent, fontWeight:700, fontFamily:"'Cormorant Garamond',serif", fontSize:"0.95rem" }}>{ngo.beneficiaries}</span>
+            <span style={{ marginLeft:"0.3rem" }}>beneficiaries</span>
+          </div>
+          <button style={{ background:`${ngo.accent}1E`, color:ngo.accent, padding:"0.36rem 1rem", borderRadius:"5px", border:`1px solid ${ngo.accent}38`, fontSize:"0.77rem", fontWeight:600, transition:"all 0.2s" }}
+            onMouseEnter={e=>{ e.currentTarget.style.background=ngo.accent; e.currentTarget.style.color="#fff"; }}
+            onMouseLeave={e=>{ e.currentTarget.style.background=`${ngo.accent}1E`; e.currentTarget.style.color=ngo.accent; }}>
+            Donate ♥
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── NGO SECTION ───
+function NGOSection({ ngos, onOpen }) {
+  return (
+    <section id="ngos" style={{ padding:"5rem 5%", background:T.bg }}>
+      <div style={{ marginBottom:"3rem" }}>
+        <STag>Organizations</STag>
+        <h2 style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"clamp(2rem,3.5vw,3rem)", fontWeight:700, color:T.white, marginTop:"0.8rem", lineHeight:1.2 }}>Discover & Support</h2>
+        <p style={{ color:T.muted, fontSize:"1rem", lineHeight:1.65, marginTop:"0.6rem", maxWidth:"500px" }}>Browse verified organizations. Click any card to view full details and donate directly.</p>
+      </div>
+      {ngos.length===0 ? (
+        <div style={{ textAlign:"center", padding:"4rem", color:T.muted, fontSize:"1.1rem" }}>No organizations found. Try adjusting your filters.</div>
+      ) : (
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(295px,1fr))", gap:"1.4rem" }}>
+          {ngos.map(n=><NGOCard key={n.id} ngo={n} onClick={onOpen} />)}
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ─── EVENT CARD ───
+function EventCard({ ev }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}
+      style={{ background:hov?T.bgLight:`${ev.color}07`, border:`1px solid ${hov?ev.color+"44":T.border}`, borderRadius:"12px", padding:"1.4rem", transition:"all 0.3s cubic-bezier(0.22,1,0.36,1)", transform:hov?"translateY(-4px)":"translateY(0)" }}>
+      <div style={{ display:"inline-flex", flexDirection:"column", alignItems:"center", background:ev.color, width:"52px", height:"52px", borderRadius:"8px", justifyContent:"center", marginBottom:"1rem" }}>
+        <span style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"1.4rem", fontWeight:700, lineHeight:1, color:T.bg }}>{ev.day}</span>
+        <span style={{ fontSize:"0.57rem", textTransform:"uppercase", letterSpacing:"1px", fontWeight:700, color:T.bg }}>{ev.month}</span>
+      </div>
+      <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"1.08rem", fontWeight:700, color:T.white, marginBottom:"0.3rem" }}>{ev.title}</div>
+      <div style={{ fontSize:"0.77rem", color:ev.color, marginBottom:"0.6rem", fontWeight:600 }}>{ev.org}</div>
+      <div style={{ fontSize:"0.81rem", color:T.muted, lineHeight:1.55 }}>{ev.desc}</div>
+      <div style={{ marginTop:"0.8rem", fontSize:"0.74rem", color:T.muted }}>📍 {ev.loc}</div>
+    </div>
+  );
+}
+
+// ─── EVENTS SECTION ───
+function EventsSection() {
+  return (
+    <section id="events" style={{ padding:"5rem 5%", background:T.bgCard, borderTop:`1px solid ${T.border}` }}>
+      <div style={{ marginBottom:"3rem" }}>
+        <STag color={T.amber}>Upcoming</STag>
+        <h2 style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"clamp(2rem,3.5vw,3rem)", fontWeight:700, color:T.white, marginTop:"0.8rem" }}>Events & Drives</h2>
+        <p style={{ color:T.muted, marginTop:"0.6rem", fontSize:"1rem" }}>Join local events, donation drives, and awareness campaigns.</p>
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))", gap:"1.2rem" }}>
+        {EVENTS.map((e,i)=><EventCard key={i} ev={e} />)}
+      </div>
+    </section>
+  );
+}
+
+// ─── HOW SECTION ───
+function HowSection() {
+  const steps = [
+    { n:"01", title:"Browse Organizations", desc:"Search and filter verified NGOs and orphanages by city, type, or cause area.", icon:"🔍" },
+    { n:"02", title:"Select & Learn",       desc:"Read about their mission, events, beneficiaries, and impact before deciding.", icon:"📖" },
+    { n:"03", title:"Choose Payment",       desc:"Pay via Bank Transfer, UPI QR, Cheque/DD, or their online donation portal.", icon:"💳" },
+    { n:"04", title:"Get 80G Receipt",      desc:"Contact the organization directly for a tax-deductible donation receipt.",   icon:"🧾" },
+  ];
+  return (
+    <section id="how" style={{ padding:"5rem 5%", background:T.bg, borderTop:`1px solid ${T.border}` }}>
+      <div style={{ textAlign:"center", marginBottom:"4rem" }}>
+        <STag>Process</STag>
+        <h2 style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"clamp(2rem,3.5vw,3rem)", fontWeight:700, color:T.white, marginTop:"0.8rem" }}>How to Donate</h2>
+      </div>
+      <div className="how-grid" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"1.5rem", maxWidth:"1000px", margin:"0 auto" }}>
+        {steps.map((s,i)=>(
+          <div key={i} style={{ textAlign:"center", padding:"2rem 1.2rem" }}>
+            <div style={{ width:"64px", height:"64px", borderRadius:"16px", background:`${T.sage}1A`, border:`1px solid ${T.sage}28`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1.6rem", margin:"0 auto 1.2rem" }}>{s.icon}</div>
+            <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:"0.7rem", color:T.sage, letterSpacing:"2px", marginBottom:"0.5rem" }}>{s.n}</div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"1.05rem", fontWeight:700, color:T.white, marginBottom:"0.5rem" }}>{s.title}</div>
+            <div style={{ fontSize:"0.81rem", color:T.muted, lineHeight:1.55 }}>{s.desc}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ─── DONATION MODAL ───
+function DonationModal({ ngo, onClose, showToast }) {
+  const [tab,      setTab]      = useState("bank");
+  const [amount,   setAmount]   = useState(500);
+  const [custom,   setCustom]   = useState("");
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    if (tab === "upi") {
+      // slight delay to ensure canvas is mounted
+      setTimeout(() => { if (canvasRef.current) drawQR(canvasRef.current, ngo.upi.id); }, 50);
+    }
+  }, [tab, ngo.upi.id]);
+
+  const handleDonate = () => {
+    const final = custom ? parseInt(custom) : amount;
+    if (!final || final < 1) { showToast("Please select or enter an amount"); return; }
+    showToast(`Proceeding to donate ₹${final.toLocaleString("en-IN")} ♥`);
+  };
+
+  const TABS = [{ id:"bank",label:"🏦 Bank Transfer"},{ id:"upi",label:"📱 UPI / QR Code"},{ id:"other",label:"💡 Other Ways"}];
+  const AMOUNTS = [500,1000,2000,5000,10000];
+
+  return (
+    <div onClick={e=>e.target===e.currentTarget&&onClose()}
+      style={{ position:"fixed", inset:0, zIndex:1000, background:"rgba(0,0,0,0.78)", backdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", padding:"1rem", animation:"fadeIn 0.25s ease" }}>
+      <div style={{ background:T.bgCard, borderRadius:"16px", maxWidth:"780px", width:"100%", maxHeight:"92vh", overflowY:"auto", border:`1px solid ${T.border}`, boxShadow:`0 40px 120px rgba(0,0,0,0.7),0 0 0 1px ${ngo.accent}1E`, animation:"fadeUp 0.35s cubic-bezier(0.22,1,0.36,1)" }}>
+
+        {/* Header */}
+        <div style={{ padding:"1.8rem 2rem", borderBottom:`1px solid ${T.border}`, display:"flex", justifyContent:"space-between", alignItems:"flex-start", background:`linear-gradient(135deg,${ngo.accent}10 0%,transparent 60%)` }}>
+          <div>
+            <div style={{ fontSize:"0.67rem", letterSpacing:"2px", textTransform:"uppercase", color:ngo.accent, fontWeight:600, marginBottom:"0.4rem" }}>{ngo.type} · {ngo.city}</div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"1.85rem", fontWeight:700, color:T.white }}>{ngo.name}</div>
+          </div>
+          <button onClick={onClose} style={{ background:T.bgLight, border:`1px solid ${T.border}`, color:T.muted, width:"36px", height:"36px", borderRadius:"8px", fontSize:"1rem", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.2s" }}
+            onMouseEnter={e=>{ e.currentTarget.style.background="#333"; e.currentTarget.style.color=T.white; }}
+            onMouseLeave={e=>{ e.currentTarget.style.background=T.bgLight; e.currentTarget.style.color=T.muted; }}>✕</button>
+        </div>
+
+        <div style={{ padding:"2rem" }}>
+          {/* Info grid */}
+          <div className="info-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"2rem", marginBottom:"0.5rem" }}>
+            <div>
+              {[["Mission",ngo.desc],["Address",ngo.address],["City / State",`${ngo.city}, ${ngo.state}`]].map(([lb,v])=>(
+                <div key={lb} style={{ marginBottom:"1rem" }}>
+                  <div style={{ fontSize:"0.63rem", letterSpacing:"1.5px", textTransform:"uppercase", color:T.muted, fontWeight:600, marginBottom:"0.3rem" }}>{lb}</div>
+                  <div style={{ fontSize:"0.87rem", color:T.cream, lineHeight:1.55 }}>{v}</div>
+                </div>
+              ))}
+              <a href={`https://www.google.com/maps/search/?api=1&query=${ngo.lat},${ngo.lng}`} target="_blank" rel="noreferrer"
+                style={{ display:"inline-flex", alignItems:"center", gap:"0.5rem", background:"#4285F4", color:"#fff", padding:"0.5rem 1.1rem", borderRadius:"6px", fontSize:"0.81rem", fontWeight:500, transition:"opacity 0.2s" }}>
+                🗺 Open in Google Maps
+              </a>
+            </div>
+            <div>
+              {[["Contact Phone",<a key="p" href={`tel:${ngo.phone}`} style={{ color:T.sage }}>{ngo.phone}</a>],
+                ["Email",<a key="e" href={`mailto:${ngo.email}`} style={{ color:T.sage }}>{ngo.email}</a>],
+                ["Website",<a key="w" href={`https://${ngo.website}`} target="_blank" rel="noreferrer" style={{ color:T.sage }}>{ngo.website}</a>],
+                ["Registered Since",`Est. ${ngo.since}`]].map(([lb,v])=>(
+                <div key={lb} style={{ marginBottom:"1rem" }}>
+                  <div style={{ fontSize:"0.63rem", letterSpacing:"1.5px", textTransform:"uppercase", color:T.muted, fontWeight:600, marginBottom:"0.3rem" }}>{lb}</div>
+                  <div style={{ fontSize:"0.87rem", color:T.cream }}>{v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Divider + title */}
+          <div style={{ borderTop:`2px solid ${T.border}`, margin:"1.5rem 0", paddingTop:"1.5rem" }}>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"1.4rem", fontWeight:700, color:T.white, display:"flex", alignItems:"center", gap:"0.7rem", marginBottom:"1.4rem" }}>
+              <span style={{ color:T.rust }}>♥</span> Make a Donation
+            </div>
+          </div>
+
+          {/* Amount picker */}
+          <div style={{ marginBottom:"1.5rem" }}>
+            <div style={{ fontSize:"0.7rem", letterSpacing:"1.5px", textTransform:"uppercase", color:T.muted, fontWeight:600, marginBottom:"0.7rem" }}>Select Amount (₹)</div>
+            <div style={{ display:"flex", gap:"0.5rem", flexWrap:"wrap", marginBottom:"0.7rem" }}>
+              {AMOUNTS.map(a=>(
+                <button key={a} onClick={()=>{ setAmount(a); setCustom(""); }}
+                  style={{ padding:"0.44rem 1.1rem", borderRadius:"6px", fontFamily:"'JetBrains Mono',monospace", fontWeight:500, fontSize:"0.86rem", border:`1.5px solid ${amount===a&&!custom?ngo.accent:T.border}`, background:amount===a&&!custom?`${ngo.accent}1E`:"transparent", color:amount===a&&!custom?ngo.accent:T.muted, transition:"all 0.2s" }}>
+                  ₹{a.toLocaleString("en-IN")}
+                </button>
+              ))}
+            </div>
+            <div style={{ display:"flex", alignItems:"center", border:`1.5px solid ${custom?ngo.accent+"55":T.border}`, borderRadius:"6px", background:T.bgLight, maxWidth:"220px", overflow:"hidden", transition:"border-color 0.2s" }}>
+              <span style={{ padding:"0.5rem 0.8rem", borderRight:`1px solid ${T.border}`, fontFamily:"'JetBrains Mono',monospace", color:T.muted }}>₹</span>
+              <input value={custom} onChange={e=>{ setCustom(e.target.value); setAmount(0); }} placeholder="Custom amount" type="number"
+                style={{ flex:1, padding:"0.5rem 0.8rem", border:"none", background:"transparent", fontFamily:"'JetBrains Mono',monospace", fontSize:"0.9rem", color:T.white }} />
+            </div>
+          </div>
+
+          {/* Payment tabs */}
+          <div style={{ display:"flex", borderBottom:`2px solid ${T.border}`, marginBottom:"1.5rem" }}>
+            {TABS.map(t=>(
+              <button key={t.id} onClick={()=>setTab(t.id)} style={{ padding:"0.65rem 1.2rem", border:"none", background:"none", fontSize:"0.84rem", fontWeight:500, color:tab===t.id?ngo.accent:T.muted, borderBottom:`2px solid ${tab===t.id?ngo.accent:"transparent"}`, marginBottom:"-2px", transition:"all 0.2s" }}>{t.label}</button>
+            ))}
+          </div>
+
+          {/* ── BANK TAB ── */}
+          {tab==="bank" && (
+            <div>
+              <div style={{ background:T.bgLight, border:`1px solid ${T.border}`, borderRadius:"10px", padding:"1.4rem", marginBottom:"1rem" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:"0.6rem", marginBottom:"1.2rem" }}>
+                  <div style={{ width:"36px", height:"36px", background:ngo.accent, borderRadius:"6px", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"0.7rem", fontWeight:700, color:T.bg }}>{ngo.bank.short}</div>
+                  <span style={{ fontWeight:600, color:T.white, fontSize:"0.93rem" }}>{ngo.bank.bankName}</span>
+                </div>
+                {[["Account Name",ngo.bank.accName],["Account Number",ngo.bank.accNum],["IFSC Code",ngo.bank.ifsc],["Branch",ngo.bank.branch],["Account Type",ngo.bank.accType]].map(([k,v])=>(
+                  <div key={k} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"0.44rem 0", borderBottom:`1px dashed ${T.border}` }}>
+                    <span style={{ fontSize:"0.74rem", color:T.muted, fontWeight:500 }}>{k}</span>
+                    <div style={{ display:"flex", alignItems:"center", gap:"0.5rem" }}>
+                      <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:"0.81rem", color:T.cream }}>{v}</span>
+                      <CopyBtn value={v} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p style={{ fontSize:"0.74rem", color:T.muted }}>💡 Use your name + "Donation" as the transfer remark. Email the UTR/reference number to the organization after transfer.</p>
+            </div>
+          )}
+
+          {/* ── UPI TAB ── */}
+          {tab==="upi" && (
+            <div style={{ textAlign:"center", padding:"1rem 0" }}>
+              <div style={{ display:"inline-block", background:"#fff", border:`2px solid ${T.border}`, borderRadius:"16px", padding:"1.5rem", boxShadow:"0 8px 30px rgba(0,0,0,0.2)", marginBottom:"1.2rem" }}>
+                <canvas ref={canvasRef} width={200} height={200} style={{ display:"block" }} />
+                <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"1rem", fontWeight:700, color:"#1A3A2A", marginTop:"0.8rem" }}>{ngo.upi.name}</div>
+                <div style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:"0.78rem", color:"#666", marginTop:"0.2rem" }}>{ngo.upi.id}</div>
+              </div>
+              <div style={{ display:"flex", gap:"0.6rem", justifyContent:"center", flexWrap:"wrap", marginBottom:"0.8rem" }}>
+                {[["G Pay","#4285F4","#fff"],["PhonePe","#5f259f","#fff"],["Paytm","#002970","#fff"],["BHIM",T.bgLight,T.sage]].map(([nm,bg,col])=>(
+                  <span key={nm} style={{ padding:"0.42rem 1rem", borderRadius:"5px", fontSize:"0.77rem", fontWeight:700, background:bg, color:col, border:`1.5px solid ${bg}` }}>{nm}</span>
+                ))}
+              </div>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:"0.5rem" }}>
+                <span style={{ fontSize:"0.76rem", color:T.muted }}>UPI: {ngo.upi.id}</span>
+                <CopyBtn value={ngo.upi.id} />
+              </div>
+              <p style={{ fontSize:"0.74rem", color:T.muted, marginTop:"0.8rem" }}>Scan with any UPI app. Enter your chosen amount and complete the payment.</p>
+            </div>
+          )}
+
+          {/* ── OTHER TAB ── */}
+          {tab==="other" && (
+            <div className="other-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"1rem" }}>
+              {[
+                { icon:"📮", title:"Demand Draft / Cheque", desc:`Draw in favor of "${ngo.bank.accName}" and mail or hand-deliver to their registered address.` },
+                { icon:"💻", title:"Online Portal", desc:"This organization has its own secure donation portal for card/net banking.", link:ngo.portal },
+                { icon:"🏛️", title:"CSR / Corporate Donation", desc:"For bulk or CSR donations, contact the organization to arrange MOU and documentation." },
+                { icon:"📦", title:"In-Kind Donation", desc:"Donate food, clothing, books, or medicine. Contact the NGO for their current needs." },
+              ].map((item,i)=>(
+                <div key={i} style={{ background:T.bgLight, border:`1px solid ${T.border}`, borderRadius:"10px", padding:"1.2rem" }}>
+                  <div style={{ fontSize:"1.4rem", marginBottom:"0.5rem" }}>{item.icon}</div>
+                  <div style={{ fontSize:"0.84rem", fontWeight:600, color:T.white, marginBottom:"0.4rem" }}>{item.title}</div>
+                  <div style={{ fontSize:"0.76rem", color:T.muted, lineHeight:1.5 }}>{item.desc}</div>
+                  {item.link && <a href={item.link} target="_blank" rel="noreferrer" style={{ display:"inline-block", marginTop:"0.5rem", fontSize:"0.77rem", color:T.sage, fontWeight:600 }}>Visit Portal →</a>}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* CTA */}
+          <div style={{ marginTop:"1.8rem", textAlign:"center", paddingTop:"1.5rem", borderTop:`1px solid ${T.border}` }}>
+            <button onClick={handleDonate} style={{ background:`linear-gradient(135deg,${ngo.accent},${ngo.accent}CC)`, color:"#fff", border:"none", borderRadius:"8px", padding:"0.95rem 3.5rem", fontSize:"1rem", fontWeight:700, letterSpacing:"0.3px", boxShadow:`0 8px 30px ${ngo.accent}40`, transition:"all 0.25s" }}
+              onMouseEnter={e=>{ e.currentTarget.style.transform="translateY(-3px)"; e.currentTarget.style.boxShadow=`0 14px 40px ${ngo.accent}55`; }}
+              onMouseLeave={e=>{ e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow=`0 8px 30px ${ngo.accent}40`; }}>
+              Donate Now ♥
+            </button>
+            <p style={{ fontSize:"0.72rem", color:T.muted, marginTop:"0.7rem" }}>SevaSangam does not process payments. Donations go directly to the organization. Ask for 80G receipt for tax benefits.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── FOOTER ───
+function Footer() {
+  return (
+    <>
+      <footer className="footer-grid" style={{ background:"#080F0A", color:T.muted, padding:"3.5rem 5%", display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:"3rem", borderTop:`1px solid ${T.border}` }}>
+        <div>
+          <Logo />
+          <p style={{ fontSize:"0.84rem", lineHeight:1.72, marginTop:"1rem", maxWidth:"260px", color:T.muted }}>Bridging compassionate donors with verified social organizations across India. Transparent. Direct. Impactful.</p>
+          <div style={{ marginTop:"1.2rem", display:"flex", gap:"0.5rem" }}>
+            {["Twitter","Instagram","LinkedIn"].map(s=>(
+              <span key={s} style={{ padding:"0.28rem 0.7rem", borderRadius:"4px", border:`1px solid ${T.border}`, fontSize:"0.7rem", color:T.muted, cursor:"pointer" }}>{s}</span>
+            ))}
+          </div>
+        </div>
+        {[["Explore",["All NGOs","Orphanages","Events","Cities"]],["Platform",["List Your NGO","Admin Login","API Docs","Contact"]],["Legal",["Privacy Policy","Terms of Use","About Us","Disclaimer"]]].map(([title,links])=>(
+          <div key={title}>
+            <h4 style={{ color:T.white, fontSize:"0.78rem", fontWeight:600, letterSpacing:"1px", textTransform:"uppercase", marginBottom:"1rem" }}>{title}</h4>
+            {links.map(l=>(
+              <a key={l} href="#" style={{ display:"block", color:T.muted, fontSize:"0.84rem", marginBottom:"0.5rem", transition:"color 0.2s" }}
+                onMouseEnter={e=>e.target.style.color=T.amber} onMouseLeave={e=>e.target.style.color=T.muted}>{l}</a>
+            ))}
+          </div>
+        ))}
+      </footer>
+      <div style={{ background:"#040C07", color:"rgba(255,255,255,0.2)", textAlign:"center", padding:"1rem 5%", fontSize:"0.74rem", borderTop:`1px solid ${T.border}` }}>
+        © 2025 SevaSangam. Built with ♥ for India's social sector. Zero platform fees on donations.
+      </div>
+    </>
+  );
+}
+
+// ─── ROOT APP ───
+function App() {
+  const [query,  setQuery]  = useState("");
+  const [city,   setCity]   = useState("");
+  const [type,   setType]   = useState("");
+  const [chip,   setChip]   = useState("");
+  const [list,   setList]   = useState(NGOS);
+  const [modal,  setModal]  = useState(null);
+  const [toast,  setToast]  = useState({ show:false, msg:"" });
+  const ngoRef = useRef(null);
+
+  const showToast = useCallback((msg) => {
+    setToast({ show:true, msg });
+    setTimeout(()=>setToast({ show:false, msg:"" }), 2800);
+  }, []);
+
+  const doFilter = useCallback(() => {
+    const q = query.toLowerCase();
+    setList(NGOS.filter(n => {
+      const mQ    = !q    || n.name.toLowerCase().includes(q) || n.desc.toLowerCase().includes(q);
+      const mCity = !city || n.city === city;
+      const mType = !type || n.type === type;
+      const mChip = !chip || n.type === chip || n.city === chip;
+      return mQ && mCity && mType && mChip;
+    }));
+  }, [query, city, type, chip]);
+
+  useEffect(() => { doFilter(); }, [chip, doFilter]);
+
+  const handleChip = useCallback((v) => setChip(v), []);
+  const handleExplore = () => ngoRef.current?.scrollIntoView({ behavior:"smooth" });
+
+  return (
+    <>
+      <FontLink />
+      <div style={{ background:T.bg, minHeight:"100vh", overflowX:"hidden" }}>
+        <Nav onList={()=>showToast("NGO listing form coming soon!")} />
+        <Hero onExplore={handleExplore} />
+        <Ticker />
+        <div ref={ngoRef}>
+          <SearchBar query={query} setQuery={setQuery} city={city} setCity={setCity} type={type} setType={setType} onSearch={doFilter} chip={chip} setChip={handleChip} />
+        </div>
+        <NGOSection ngos={list} onOpen={setModal} />
+        <EventsSection />
+        <HowSection />
+        <Footer />
+        {modal && <DonationModal ngo={modal} onClose={()=>setModal(null)} showToast={showToast} />}
+        <Toast msg={toast.msg} show={toast.show} />
+      </div>
+    </>
+  );
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
